@@ -1,2 +1,0 @@
-# green-nutz
-Data Project
