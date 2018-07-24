@@ -9,9 +9,6 @@ namespace Data_Inspector
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            int test = 0;
-            test++;
-
         }
     }
 }
