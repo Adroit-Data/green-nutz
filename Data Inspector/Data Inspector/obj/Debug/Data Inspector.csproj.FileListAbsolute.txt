@@ -81,3 +81,87 @@ C:\Users\mwhite\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Micros
 C:\Users\mwhite\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 C:\Users\mwhite\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.dll
 C:\Users\mwhite\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.pdb
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\ApplicationInsights.config
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\csc.exe
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\vbc.exe
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\VBCSCompiler.exe
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Data Inspector.dll.config
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Data Inspector.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Data Inspector.pdb
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Antlr3.Runtime.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\EntityFramework.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\EntityFramework.SqlServer.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\log4net.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AI.Agent.Intercept.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AI.DependencyCollector.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AI.PerfCounterCollector.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AI.ServerTelemetryChannel.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AI.Web.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AI.WindowsServer.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.ApplicationInsights.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AspNet.Identity.Core.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AspNet.Identity.EntityFramework.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AspNet.Identity.Owin.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Host.SystemWeb.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.Cookies.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.Facebook.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.Google.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.MicrosoftAccount.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.OAuth.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.Twitter.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Newtonsoft.Json.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Owin.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.Helpers.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.Mvc.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.Optimization.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.Razor.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.WebPages.Deployment.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.WebPages.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.WebPages.Razor.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\WebGrease.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\log4net.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AI.DependencyCollector.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AI.ServerTelemetryChannel.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AI.Web.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AI.WindowsServer.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.ApplicationInsights.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.Helpers.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.Mvc.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.Optimization.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.Razor.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.WebPages.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.WebPages.Deployment.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\System.Web.WebPages.Razor.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Antlr3.Runtime.pdb
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Newtonsoft.Json.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\EntityFramework.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\EntityFramework.SqlServer.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AspNet.Identity.Core.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AspNet.Identity.Owin.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.AspNet.Identity.EntityFramework.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Host.SystemWeb.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.Facebook.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.Cookies.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.OAuth.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.Google.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.Twitter.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.dll
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.pdb
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.csprojResolveAssemblyReference.cache

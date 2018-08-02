@@ -26,5 +26,6 @@ namespace Data_Inspector.Controllers
 
             return View();
         }
+
     }
 }

@@ -1,0 +1,30 @@
+﻿@model Data_Inspector.Models.LoadViewModel
+@{
+    ViewBag.Title = "Load";
+}
+
+<div class="jumbotron">
+    <h1>@ViewBag.Title.</h1>
+    <p class="lead">Select your file to upload and analyse</p>
+</div>
+
+@using (Html.BeginForm("Load", "Load", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(m => m.File, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.File, new { type = "file", @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Load" />
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
