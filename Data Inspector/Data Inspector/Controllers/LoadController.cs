@@ -13,5 +13,12 @@ namespace Data_Inspector.Controllers
         {
             return View();
         }
+
+        public ActionResult Loaded()
+        {
+            ViewBag.Message = "Your application description page.";
+
+            return View();
+        }
     }
 }

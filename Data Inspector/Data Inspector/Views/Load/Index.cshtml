@@ -8,7 +8,7 @@
     <p class="lead">Select your file to upload and analyse</p>
 </div>
 
-@using (Html.BeginForm("Load", "Load", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("Loaded", "Load", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     
     @Html.ValidationSummary("", new { @class = "text-danger" })
