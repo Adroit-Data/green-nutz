@@ -43,21 +43,57 @@ namespace Data_Inspector.Controllers
                     }
                     else
                     {
-                        //TO:DO
+                        //TO:DO -- All successful, save the file to temp location
                         
                         var fileName = Path.GetFileName(file.FileName);
                         var path = Path.Combine(Server.MapPath("~/Content/Upload"), fileName);
                         file.SaveAs(path);
                         ModelState.Clear();
                         ViewBag.Message = "File uploaded successfully";
+
+                        //Read File
+                        using (var streamReader = System.IO.File.OpenText(path))
+                        {
+                            int lineposition = 0;
+                            //var dbContext = new SampleDbContext();
+                            while (!streamReader.EndOfStream)
+                            {
+                                lineposition = lineposition + 1;                               
+                                if (lineposition == 1)
+                                    //header row ... create the table                                    
+                                {
+                                    var line = streamReader.ReadLine();
+                                    ViewBag.DataDebug = "Data is" + line;
+                                }
+                                else
+                                    //data
+                                {
+                                    var line = streamReader.ReadLine();
+                                    var data = line.Split(new[] { ',' });
+
+                                    //dbContext.Persons.Add(person);
+                                }
+                            }
+
+                            //dbContext.SaveChanges();
+                            //rerun Loaded View passing the table id
+                        }
+
                     }
                 }
             }
+            //Somethings gone wrong, return view
             return View();
         }
 
         public ActionResult Loaded(string id)
         {
+            // If no id return to Load screen
+            if (id == null)
+            {
+               return RedirectToAction("Index","Load");
+            }
+
             ViewBag.DataFile = "Data Data Data";
 
             return View();

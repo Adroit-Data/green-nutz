@@ -7,6 +7,7 @@
     <h1>@ViewBag.Title.</h1>
     <p class="lead">Select your file to upload and analyse</p>
     <p class="alert-info">@ViewBag.Message</p>
+    <p class="alert-info">@ViewBag.DataDebug</p>
 </div>
 
 @using (Html.BeginForm("Index", "Load", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
