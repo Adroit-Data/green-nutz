@@ -60,10 +60,36 @@ namespace Data_Inspector.Controllers
                             {
                                 lineposition = lineposition + 1;                               
                                 if (lineposition == 1)
-                                    //header row ... create the table                                    
+                                    //header row ... 1.work out structure 2.create the table                                    
                                 {
-                                    var line = streamReader.ReadLine();
-                                    ViewBag.DataDebug = "Data is" + line;
+                                    string line = streamReader.ReadLine();
+                                    //does the header row have commas?
+                                    int commacount = 0;
+                                    foreach (char c in line)
+                                        if (c == ',') commacount++;
+                                    //does the header row have text qualifiers? i.e. "
+                                    int qualifiercount = 0;
+                                    foreach (char c in line)
+                                        if (c == '"') qualifiercount++;
+                                    //work out if it's a csv structure
+                                    bool csv = false;
+                                    if (2*commacount == qualifiercount || 2 * commacount == 2 + qualifiercount)
+                                    {
+                                        csv = true;
+                                    }
+                                    else if(qualifiercount == 0 && commacount > 0)
+                                    {
+                                        csv = true;
+                                    }
+
+                                    //is it a valid structure??
+                                    if(csv == false)
+                                    {                                        
+                                        ViewBag.Message = "Unsupported File Format.";
+                                        return View();
+                                    }
+
+                                    ViewBag.DataDebug = "Data is " + line + " and there are " + commacount + " commas and " + qualifiercount + " qualifiers!" ;  
                                 }
                                 else
                                     //data
