@@ -210,6 +210,8 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\LoadedFile.cs" />
+    <Compile Include="Models\LoadedFiles.cs" />
     <Compile Include="Models\LoadViewModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

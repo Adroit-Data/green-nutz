@@ -84,6 +84,22 @@ namespace Data_Inspector.Models
             ;
         }
 
+        public string GenerateCreateTableSql(string[] fields, string loadid)
+        {
+            string sql;
+
+            sql = "CREATE TABLE table_load_" + loadid + " (";
+            foreach (string item in fields)
+            {
+                string field = item.Replace("\"", "");
+                sql = sql + " " + field + " varchar(max),";
+            }
+            sql = sql + ");";
+
+
+            return sql;
+        }
+
     }
 
     

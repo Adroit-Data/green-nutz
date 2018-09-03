@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data;
 using System.Web;
 using System.Web.Mvc;
 using System.IO;
@@ -81,11 +82,15 @@ namespace Data_Inspector.Controllers
                                          return View();
                                     }    
                                     //add to table details table, return table id.
-                                    string tableid = "0";
+                                    string loadid = "0";
 
-                                    //tableid = AddTableViewModel();
-
-
+                                    //loadid = AddTableViewModel();
+                                    
+                                    
+                                    LoadedFiles ctx = new LoadedFiles();
+                                    LoadedFile loadedfile = new LoadedFile { FileName = "test", FileType = "csv" };
+                                    ctx.LoadedFiless.Add(loadedfile);
+                                    ctx.SaveChanges();                                 
 
                                     //create table
                                     //turn first line into an array using the now known seperator
@@ -93,13 +98,7 @@ namespace Data_Inspector.Controllers
 
                                     string sql;
 
-                                    sql = "CREATE TABLE table_load_" + tableid + " (";
-                                    foreach(string item in fields)
-                                    {
-                                        string field = item.Replace("\"","");
-                                        sql = sql + " " + field + " varchar(max),";
-                                    }
-                                    sql = sql + ");";
+                                    sql = LoadView.GenerateCreateTableSql(fields, loadid);
 
                                     ViewBag.DataDebug = "SQL is " + sql ;  
                                 }
