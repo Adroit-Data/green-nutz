@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.IO;
+using System.Text.RegularExpressions;
 using Data_Inspector.Models;
+
 
 namespace Data_Inspector.Controllers
 {
@@ -58,46 +60,56 @@ namespace Data_Inspector.Controllers
                             //var dbContext = new SampleDbContext();
                             while (!streamReader.EndOfStream)
                             {
-                                lineposition = lineposition + 1;                               
+                                lineposition++;                               
                                 if (lineposition == 1)
                                     //header row ... 1.work out structure 2.create the table                                    
                                 {
-                                    string line = streamReader.ReadLine();
-                                    //does the header row have commas?
-                                    int commacount = 0;
-                                    foreach (char c in line)
-                                        if (c == ',') commacount++;
-                                    //does the header row have text qualifiers? i.e. "
-                                    int qualifiercount = 0;
-                                    foreach (char c in line)
-                                        if (c == '"') qualifiercount++;
-                                    //work out if it's a csv structure
-                                    bool csv = false;
-                                    if (2*commacount == qualifiercount || 2 * commacount == 2 + qualifiercount)
-                                    {
-                                        csv = true;
-                                    }
-                                    else if(qualifiercount == 0 && commacount > 0)
-                                    {
-                                        csv = true;
-                                    }
+                                    string headerrow = streamReader.ReadLine();
+                                    //detect filetype
+
+                                    string filetype;
+                                    string seperator;
+
+                                    LoadViewModel LoadView = new LoadViewModel();                                   
+                                    filetype = LoadView.DetectFileType(headerrow);
+                                    seperator = LoadView.DetectSeperator(headerrow);
 
                                     //is it a valid structure??
-                                    if(csv == false)
-                                    {                                        
-                                        ViewBag.Message = "Unsupported File Format.";
-                                        return View();
-                                    }
+                                    if (filetype == "notvalid")
+                                    {
+                                         ViewBag.Message = "Unsupported File Format.";
+                                         return View();
+                                    }    
+                                    //add to table details table, return table id.
+                                    string tableid = "0";
 
-                                    ViewBag.DataDebug = "Data is " + line + " and there are " + commacount + " commas and " + qualifiercount + " qualifiers!" ;  
+                                    //tableid = AddTableViewModel();
+
+
+
+                                    //create table
+                                    //turn first line into an array using the now known seperator
+                                    string[] fields = Regex.Split(headerrow, seperator); ;
+
+                                    string sql;
+
+                                    sql = "CREATE TABLE table_load_" + tableid + " (";
+                                    foreach(string item in fields)
+                                    {
+                                        string field = item.Replace("\"","");
+                                        sql = sql + " " + field + " varchar(max),";
+                                    }
+                                    sql = sql + ");";
+
+                                    ViewBag.DataDebug = "SQL is " + sql ;  
                                 }
                                 else
                                     //data
                                 {
                                     var line = streamReader.ReadLine();
-                                    var data = line.Split(new[] { ',' });
+                                    
 
-                                    //dbContext.Persons.Add(person);
+                                    
                                 }
                             }
 
