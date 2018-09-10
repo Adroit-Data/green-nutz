@@ -55,33 +55,45 @@ namespace Data_Inspector.Models
             return filetype;
         }
 
-        public string DetectSeperator(string headerrow)
+        public char DetectDelimeter(string source)
         {
-            string seperator;
+            char delimiter = '?';
+            int commasCounter = 0;
+            int semicolonCounter = 0;
+            int colonCounter = 0;
 
-            //does the header row have commas?                                
-            int commacount = 0;
-            foreach (char c in headerrow)
-                if (c == ',') commacount++;
-            //does the header row have text qualifiers? i.e. "
-            int qualifiercount = 0;
-            foreach (char c in headerrow)
-                if (c == '"') qualifiercount++;
-            //work out if it's a csv structure
-            if (2 * commacount == qualifiercount || 2 * commacount + 2 == qualifiercount)
-            {                
-                seperator = "\",\"";
-            }
-            else if (qualifiercount == 0 && commacount > 0)
+            foreach (char c in source)
             {
-                seperator = ",";
+                if (c == ',')
+                    commasCounter++;
+
+                else if (c == ';')
+                    semicolonCounter++;
+
+                else if (c == ':')
+                    colonCounter++;
             }
-            else
-            {                
-                seperator = ",";
+
+            DelimiterObject[] array =
+                {
+                    new DelimiterObject { Name = "commas", value = commasCounter, delimiter = ','},
+                    new DelimiterObject { Name = "semicolon", value = semicolonCounter, delimiter = ';'},
+                    new DelimiterObject { Name = "colon", value = colonCounter, delimiter = ':'}
+                };
+
+            int highest = 0;
+
+            foreach (DelimiterObject c in array)
+            {
+                if (c.value > highest)
+                {
+                    highest = c.value;
+                    delimiter = c.delimiter;
+                }
             }
-            return seperator;
-            ;
+
+            return delimiter;
+
         }
 
         public string GenerateCreateTableSql(string[] fields, string loadid)
@@ -92,8 +104,25 @@ namespace Data_Inspector.Models
             foreach (string item in fields)
             {
                 string field = item.Replace("\"", "");
-                sql = sql + " " + field + " varchar(max),";
+                sql = sql + " " + field + " nvarchar(max),";
             }
+            sql = sql + ");";
+
+
+            return sql;
+        }
+
+        public string GenerateInsertInToTableSql(string[] data, string loadid)
+        {
+            string sql;
+
+            sql = "INSERT INTO table_load_" + loadid + " VALUES (";
+            foreach (string item in data)
+            {
+                string row = item.Replace("\"", "");
+                sql = sql + "'" + row + "',";
+            }
+            sql = sql.TrimEnd(',');
             sql = sql + ");";
 
 

@@ -32,17 +32,11 @@ namespace Data_Inspector.Controllers
                 }
                 else if (file.ContentLength > 0)
                 {
-                    int MaxContentLength = 1024 * 1024 * 3; //3 MB
                     string[] AllowedFileExtensions = new string[] { ".txt", ".csv" };
 
                     if (!AllowedFileExtensions.Contains(file.FileName.Substring(file.FileName.LastIndexOf('.'))))
                     {
                         ModelState.AddModelError("File", "Please file of type: " + string.Join(", ", AllowedFileExtensions));
-                    }
-
-                    else if (file.ContentLength > MaxContentLength)
-                    {
-                        ModelState.AddModelError("File", "Your file is too large, maximum allowed size is: " + MaxContentLength + " MB");
                     }
                     else
                     {
@@ -57,63 +51,66 @@ namespace Data_Inspector.Controllers
                         //Read File
                         using (var streamReader = System.IO.File.OpenText(path))
                         {
-                            int lineposition = 0;
-                            //var dbContext = new SampleDbContext();
+                            string source = streamReader.ReadLine();
+
+                            //confirm filetype and detect seperator
+                            LoadViewModel LoadView = new LoadViewModel();
+                            string fileType = LoadView.DetectFileType(source);
+                            char seperator = LoadView.DetectDelimeter(source);
+
+                            //is it a valid structure??
+                            if (fileType == "notvalid" || seperator == '?')
+                            {
+                                ViewBag.Message = "Unsupported File Format.";
+                                return View();
+                            }
+
+                            //add to table details table, return table id.
+                            string loadid;
+
+                            LoadedFiles ctx = new LoadedFiles();
+                            LoadedFile loadedfile = new LoadedFile { LoadedFileID = Guid.NewGuid(), FileName = fileName, FileType = fileType, FileImportDate = DateTime.Now };
+                            ctx.DBLoadedFiles.Add(loadedfile);
+                            ctx.SaveChanges();
+
+                            loadid = loadedfile.LoadedFileID.ToString();
+
+                            string[] fields = source.Split(seperator);
+
+                            string sql;
+
+                            string sqlproofloadid = loadid.Replace('-', '_');
+
+                            sql = LoadView.GenerateCreateTableSql(fields, sqlproofloadid);
+
+                            using (var newTableCtx = new LoadedFiles())
+                            {
+                                int noOfTablesCreated = newTableCtx.Database.ExecuteSqlCommand(sql);
+                            }
+
+
                             while (!streamReader.EndOfStream)
                             {
-                                lineposition++;                               
-                                if (lineposition == 1)
-                                    //header row ... 1.work out structure 2.create the table                                    
+                                //insert data in to new table
+                                source = streamReader.ReadLine();
+                                string[] values = source.Split(seperator);
+
+                                sql = LoadView.GenerateInsertInToTableSql(values, sqlproofloadid);
+
+                                //ViewBag.Message = sql;
+                                using (var newTableCtx = new LoadedFiles())
                                 {
-                                    string headerrow = streamReader.ReadLine();
-                                    //detect filetype
-
-                                    string filetype;
-                                    string seperator;
-
-                                    LoadViewModel LoadView = new LoadViewModel();                                   
-                                    filetype = LoadView.DetectFileType(headerrow);
-                                    seperator = LoadView.DetectSeperator(headerrow);
-
-                                    //is it a valid structure??
-                                    if (filetype == "notvalid")
-                                    {
-                                         ViewBag.Message = "Unsupported File Format.";
-                                         return View();
-                                    }    
-                                    //add to table details table, return table id.
-                                    string loadid = "0";
-
-                                    //loadid = AddTableViewModel();
-                                    
-                                    
-                                    LoadedFiles ctx = new LoadedFiles();
-                                    LoadedFile loadedfile = new LoadedFile { FileName = "test", FileType = "csv" };
-                                    ctx.LoadedFiless.Add(loadedfile);
-                                    ctx.SaveChanges();                                 
-
-                                    //create table
-                                    //turn first line into an array using the now known seperator
-                                    string[] fields = Regex.Split(headerrow, seperator); ;
-
-                                    string sql;
-
-                                    sql = LoadView.GenerateCreateTableSql(fields, loadid);
-
-                                    ViewBag.DataDebug = "SQL is " + sql ;  
-                                }
-                                else
-                                    //data
-                                {
-                                    var line = streamReader.ReadLine();
-                                    
-
-                                    
+                                     int noOfRecordsInserted = newTableCtx.Database.ExecuteSqlCommand(sql);
                                 }
                             }
 
-                            //dbContext.SaveChanges();
-                            //rerun Loaded View passing the table id
+                            streamReader.Close();
+
+                            if (System.IO.File.Exists(path))
+                            {
+                                System.IO.File.Delete(path);
+                            }
+                            //return Loaded View passing the table id
                         }
 
                     }

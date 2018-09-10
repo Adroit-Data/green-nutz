@@ -209,6 +209,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\DelimiterObject.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoadedFile.cs" />
     <Compile Include="Models\LoadedFiles.cs" />

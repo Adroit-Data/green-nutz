@@ -12,7 +12,7 @@ namespace Data_Inspector.Models
         {
         }
 
-        public virtual DbSet<LoadedFile> LoadedFiless { get; set; }
+        public virtual DbSet<LoadedFile> DBLoadedFiles { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -26,3 +26,4 @@ namespace Data_Inspector.Models
         }
     }
 }
+ 

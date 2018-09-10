@@ -20,5 +20,7 @@ namespace Data_Inspector.Models
         [StringLength(10)]
         public string FileType { get; set; }
 
+        public DateTime FileImportDate { get; set; }
+
     }
 }
