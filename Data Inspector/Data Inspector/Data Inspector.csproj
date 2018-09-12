@@ -314,6 +314,7 @@
     <Content Include="Views\Load\Index.cshtml" />
     <Content Include="Views\MyLoads\Index.cshtml" />
     <Content Include="Views\MyLoads\View.cshtml" />
+    <Content Include="Views\MyLoads\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

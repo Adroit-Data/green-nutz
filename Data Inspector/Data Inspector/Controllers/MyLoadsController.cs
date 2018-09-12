@@ -89,26 +89,37 @@ namespace Data_Inspector.Controllers
         }
 
         // GET: MyLoads/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(Guid id)
         {
-            return View();
+            using (MyLoadsConnection myLoads = new MyLoadsConnection())
+            {
+                return View(myLoads.LoadedFiles.Where(x => x.LoadedFileID == id).FirstOrDefault());
+            }
         }
-
         // POST: MyLoads/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public ActionResult Delete(Guid id, FormCollection collection)
         {
+            string tableName = null;
             try
             {
                 // TODO: Add delete logic here
+                using (MyLoadsConnection myLoads = new MyLoadsConnection())
+                {
+                    LoadedFile loadedfile = myLoads.LoadedFiles.Where(x => x.LoadedFileID == id).FirstOrDefault();
+                    myLoads.LoadedFiles.Remove(loadedfile);
+                    tableName = loadedfile.LoadedFileID.ToString();
+                    myLoads.Database.ExecuteSqlCommand("Drop Table [dbo].table_load_" + tableName.Replace("-", "_"));
+                    myLoads.SaveChanges();
+                }
 
                 return RedirectToAction("Index");
             }
             catch
             {
+                ViewBag.Message = "Table not droped";
                 return View();
             }
         }
-
     }
 }
