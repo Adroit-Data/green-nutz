@@ -13,7 +13,11 @@
         <tr>
             @foreach (DataColumn col in Model.Columns)
             {
-                <th>@col.ColumnName</th>
+                if (col.ColumnName != "DIRowID")
+                {
+                    <th>@col.ColumnName</th>
+                }
+
             }
         </tr>
     </thead>
@@ -23,7 +27,10 @@
             <tr>
                 @foreach (DataColumn col in Model.Columns)
                 {
+                    if (col.ColumnName != "DIRowID")
+                    {
                     <td>@row[col.ColumnName]</td>
+                    }
                 }
             </tr>
         }
