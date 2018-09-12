@@ -28,7 +28,7 @@ namespace Data_Inspector.Controllers
         // GET: MyLoads/Create
         public ActionResult Create()
         {
-            return View();
+            return RedirectToAction("Index", "Load");
         }
 
         // POST: MyLoads/Create
@@ -37,6 +37,7 @@ namespace Data_Inspector.Controllers
         {
             try
             {
+              
                 // TODO: Add insert logic here
 
                 return RedirectToAction("Index");
