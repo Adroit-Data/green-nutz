@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Data;
+using System.Data.SqlClient;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -19,10 +22,25 @@ namespace Data_Inspector.Controllers
             
         }
 
-        // GET: MyLoads/Details/5
-        public ActionResult Details(int id)
+        // GET: MyLoads/View/5
+        public ActionResult View(Guid id)
         {
-            return View();
+            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+            var Conn = new SqlConnection(ConnStr);
+            string SqlString = "SELECT * FROM ADI_DataInspector.dbo.table_load_" + id.ToString().Replace('-','_');
+            SqlDataAdapter sda = new SqlDataAdapter(SqlString, Conn);
+            DataTable dt = new DataTable();
+            try
+            {
+                Conn.Open();
+                sda.Fill(dt);
+            }
+            finally
+            {
+                Conn.Close();
+            }
+            return View(dt);
+           
         }
 
         // GET: MyLoads/Create
@@ -91,5 +109,6 @@ namespace Data_Inspector.Controllers
                 return View();
             }
         }
+
     }
 }

@@ -120,18 +120,5 @@ namespace Data_Inspector.Controllers
             return View();
         }
 
-        public ActionResult Loaded(string id)
-        {
-            // If no id return to Load screen
-            if (id == null)
-            {
-               return RedirectToAction("Index","Load");
-            }
-
-            ViewBag.DataFile = "Data Data Data";
-
-            return View();
-        }
-
     }
 }
