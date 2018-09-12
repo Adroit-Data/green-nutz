@@ -100,7 +100,8 @@ namespace Data_Inspector.Models
         {
             string sql;
 
-            sql = "CREATE TABLE table_load_" + loadid + " (";
+            sql = "CREATE TABLE table_load_" + loadid + " (DIRowID uniqueidentifier not null,";
+
             foreach (string item in fields)
             {
                 string field = item.Replace("\"", "");
@@ -116,7 +117,7 @@ namespace Data_Inspector.Models
         {
             string sql;
 
-            sql = "INSERT INTO table_load_" + loadid + " VALUES (";
+            sql = "INSERT INTO table_load_" + loadid + " VALUES (newid(),";
             foreach (string item in data)
             {
                 string row = item.Replace("\"", "");

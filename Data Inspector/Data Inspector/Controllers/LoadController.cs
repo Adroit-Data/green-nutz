@@ -111,6 +111,9 @@ namespace Data_Inspector.Controllers
                                 System.IO.File.Delete(path);
                             }
                             //return Loaded View passing the table id
+
+                            return Redirect("MyLoads");
+
                         }
 
                     }
