@@ -7,6 +7,8 @@ using System.Web.Mvc;
 using System.IO;
 using System.Text.RegularExpressions;
 using Data_Inspector.Models;
+using Microsoft.AspNet.Identity;
+using System.Security.Claims;
 
 
 namespace Data_Inspector.Controllers
@@ -69,7 +71,7 @@ namespace Data_Inspector.Controllers
                             string loadid;
 
                             LoadedFiles ctx = new LoadedFiles();
-                            LoadedFile loadedfile = new LoadedFile { LoadedFileID = Guid.NewGuid(), FileName = fileName, FileType = fileType, FileImportDate = DateTime.Now };
+                            LoadedFile loadedfile = new LoadedFile { LoadedFileID = Guid.NewGuid(), FileName = fileName, FileType = fileType, FileImportDate = DateTime.Now, UserID = User.Identity.GetUserId() };
                             ctx.DBLoadedFiles.Add(loadedfile);
                             ctx.SaveChanges();
 

@@ -18,5 +18,6 @@ namespace Data_Inspector.Models
         public string FileName { get; set; }
         public string FileType { get; set; }
         public System.DateTime FileImportDate { get; set; }
+        public string UserID { get; set; }
     }
 }
