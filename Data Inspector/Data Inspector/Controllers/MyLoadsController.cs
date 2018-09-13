@@ -48,7 +48,10 @@ namespace Data_Inspector.Controllers
             {
                 var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
                 var roles = userManager.GetRoles(User.Identity.GetUserId());
-                if (roles.Contains("Admin"))
+
+                int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
+
+                if (roles.Contains("Admin")|| myUserLoads > 0)
                 {
                     string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
                     var Conn = new SqlConnection(ConnStr);
@@ -66,31 +69,8 @@ namespace Data_Inspector.Controllers
                     }
                     return View(dt);
                 }
-                else
-                {
-
-                    int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
-
-                    if (myUserLoads > 0)
-                    {
-                        string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
-                        var Conn = new SqlConnection(ConnStr);
-                        string SqlString = "SELECT * FROM ADI_DataInspector.dbo.table_load_" + id.ToString().Replace('-', '_');
-                        SqlDataAdapter sda = new SqlDataAdapter(SqlString, Conn);
-                        DataTable dt = new DataTable();
-                        try
-                        {
-                            Conn.Open();
-                            sda.Fill(dt);
-                        }
-                        finally
-                        {
-                            Conn.Close();
-                        }
-                        return View(dt);
-
-                    }
-                }
+               
+                
 
                 return RedirectToAction("NoAuth", "MyLoads");
 
@@ -120,60 +100,66 @@ namespace Data_Inspector.Controllers
             }
         }
 
-        // GET: MyLoads/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: MyLoads/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
         // GET: MyLoads/Delete/5
         public ActionResult Delete(Guid id)
         {
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
+                var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                var roles = userManager.GetRoles(User.Identity.GetUserId());
+
+                int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
+
+                if (roles.Contains("Admin") || myUserLoads > 0)
+                {
+                    
                 return View(myLoads.LoadedFiles.Where(x => x.LoadedFileID == id).FirstOrDefault());
+                    
+                }
             }
+
+            return RedirectToAction("Index");
+
         }
         // POST: MyLoads/Delete/5
         [HttpPost]
         public ActionResult Delete(Guid id, FormCollection collection)
         {
-            string tableName = null;
-            try
-            {
-                // TODO: Add delete logic here
-                using (MyLoadsConnection myLoads = new MyLoadsConnection())
-                {
-                    LoadedFile loadedfile = myLoads.LoadedFiles.Where(x => x.LoadedFileID == id).FirstOrDefault();
-                    myLoads.LoadedFiles.Remove(loadedfile);
-                    tableName = loadedfile.LoadedFileID.ToString();
-                    myLoads.Database.ExecuteSqlCommand("Drop Table [dbo].table_load_" + tableName.Replace("-", "_"));
-                    myLoads.SaveChanges();
-                }
 
-                return RedirectToAction("Index");
-            }
-            catch
+            using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
-                ViewBag.Message = "Table not droped";
-                return View();
+                var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                var roles = userManager.GetRoles(User.Identity.GetUserId());
+
+                int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
+
+                if (roles.Contains("Admin") || myUserLoads > 0)
+                {
+                    string tableName = null;
+                    try
+                    {
+                        // TODO: Add delete logic here
+
+                        LoadedFile loadedfile = myLoads.LoadedFiles.Where(x => x.LoadedFileID == id).FirstOrDefault();
+                        myLoads.LoadedFiles.Remove(loadedfile);
+                        tableName = loadedfile.LoadedFileID.ToString();
+                        myLoads.Database.ExecuteSqlCommand("Drop Table [dbo].table_load_" + tableName.Replace("-", "_"));
+                        myLoads.SaveChanges();
+
+                        return RedirectToAction("Index");
+                    }
+                    catch
+                    {
+                        ViewBag.Message = "Table not droped";
+                        return View();
+                    }
+                }
             }
+
+
+            return RedirectToAction("Index");
+
         }
     }
 }
