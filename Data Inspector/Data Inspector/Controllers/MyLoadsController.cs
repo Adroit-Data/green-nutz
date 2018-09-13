@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Data_Inspector.Models;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace Data_Inspector.Controllers
 {
@@ -18,7 +19,16 @@ namespace Data_Inspector.Controllers
         {
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
-                return View(myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()));
+                var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                var roles = userManager.GetRoles(User.Identity.GetUserId());
+                if (roles.Contains("Admin"))
+                {
+                    return View(myLoads.LoadedFiles.ToList());
+                }
+                else
+                {
+                    return View(myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()));
+                }
             }
             
         }
@@ -36,9 +46,9 @@ namespace Data_Inspector.Controllers
             //Check Data belongs to user.
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
-                int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
-
-                if (myUserLoads > 0)
+                var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                var roles = userManager.GetRoles(User.Identity.GetUserId());
+                if (roles.Contains("Admin"))
                 {
                     string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
                     var Conn = new SqlConnection(ConnStr);
@@ -54,12 +64,37 @@ namespace Data_Inspector.Controllers
                     {
                         Conn.Close();
                     }
-                    return View(dt);  
+                    return View(dt);
                 }
+                else
+                {
+
+                    int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
+
+                    if (myUserLoads > 0)
+                    {
+                        string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+                        var Conn = new SqlConnection(ConnStr);
+                        string SqlString = "SELECT * FROM ADI_DataInspector.dbo.table_load_" + id.ToString().Replace('-', '_');
+                        SqlDataAdapter sda = new SqlDataAdapter(SqlString, Conn);
+                        DataTable dt = new DataTable();
+                        try
+                        {
+                            Conn.Open();
+                            sda.Fill(dt);
+                        }
+                        finally
+                        {
+                            Conn.Close();
+                        }
+                        return View(dt);
+
+                    }
+                }
+
+                return RedirectToAction("NoAuth", "MyLoads");
+
             }
-
-            return RedirectToAction("NoAuth", "MyLoads");
-
         }
 
         // GET: MyLoads/Create
