@@ -315,6 +315,7 @@
     <Content Include="Views\MyLoads\Index.cshtml" />
     <Content Include="Views\MyLoads\View.cshtml" />
     <Content Include="Views\MyLoads\Delete.cshtml" />
+    <Content Include="Views\MyLoads\NoAuth.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

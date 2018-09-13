@@ -23,25 +23,43 @@ namespace Data_Inspector.Controllers
             
         }
 
+        // GET: MyLoads/NoAuth
+        public ActionResult NoAuth()
+        {
+            return View();
+
+        }
+
         // GET: MyLoads/View/5
         public ActionResult View(Guid id)
         {
-            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
-            var Conn = new SqlConnection(ConnStr);
-            string SqlString = "SELECT * FROM ADI_DataInspector.dbo.table_load_" + id.ToString().Replace('-','_');
-            SqlDataAdapter sda = new SqlDataAdapter(SqlString, Conn);
-            DataTable dt = new DataTable();
-            try
+            //Check Data belongs to user.
+            using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
-                Conn.Open();
-                sda.Fill(dt);
+                int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
+
+                if (myUserLoads > 0)
+                {
+                    string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+                    var Conn = new SqlConnection(ConnStr);
+                    string SqlString = "SELECT * FROM ADI_DataInspector.dbo.table_load_" + id.ToString().Replace('-', '_');
+                    SqlDataAdapter sda = new SqlDataAdapter(SqlString, Conn);
+                    DataTable dt = new DataTable();
+                    try
+                    {
+                        Conn.Open();
+                        sda.Fill(dt);
+                    }
+                    finally
+                    {
+                        Conn.Close();
+                    }
+                    return View(dt);  
+                }
             }
-            finally
-            {
-                Conn.Close();
-            }
-            return View(dt);
-           
+
+            return RedirectToAction("NoAuth", "MyLoads");
+
         }
 
         // GET: MyLoads/Create
