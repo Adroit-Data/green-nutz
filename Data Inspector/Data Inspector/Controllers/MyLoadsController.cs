@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Data_Inspector.Models;
+using Microsoft.AspNet.Identity;
 
 namespace Data_Inspector.Controllers
 {
@@ -17,7 +18,7 @@ namespace Data_Inspector.Controllers
         {
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
-                return View(myLoads.LoadedFiles.ToList());
+                return View(myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()));
             }
             
         }
