@@ -16,12 +16,13 @@ namespace Data_Inspector.Controllers
     {
         // GET: MyLoads
         public ActionResult Index()
-        {
+        {            
+
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
-                var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                var roles = userManager.GetRoles(User.Identity.GetUserId());
-                if (roles.Contains("Admin"))
+                
+
+                if (User.IsInRole("Admin"))
                 {
                     return View(myLoads.LoadedFiles.ToList());
                 }
@@ -29,6 +30,8 @@ namespace Data_Inspector.Controllers
                 {
                     return View(myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()));
                 }
+
+                
             }
             
         }
@@ -46,12 +49,10 @@ namespace Data_Inspector.Controllers
             //Check Data belongs to user.
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
-                var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                var roles = userManager.GetRoles(User.Identity.GetUserId());
-
+                
                 int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
 
-                if (roles.Contains("Admin")|| myUserLoads > 0)
+                if (User.IsInRole("Admin") || myUserLoads > 0)
                 {
                     string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
                     var Conn = new SqlConnection(ConnStr);
@@ -106,12 +107,10 @@ namespace Data_Inspector.Controllers
         {
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
-                var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                var roles = userManager.GetRoles(User.Identity.GetUserId());
 
                 int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
 
-                if (roles.Contains("Admin") || myUserLoads > 0)
+                if (User.IsInRole("Admin") || myUserLoads > 0)
                 {
                     
                 return View(myLoads.LoadedFiles.Where(x => x.LoadedFileID == id).FirstOrDefault());
@@ -128,13 +127,11 @@ namespace Data_Inspector.Controllers
         {
 
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
-            {
-                var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                var roles = userManager.GetRoles(User.Identity.GetUserId());
+            {              
 
                 int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
 
-                if (roles.Contains("Admin") || myUserLoads > 0)
+                if (User.IsInRole("Admin") || myUserLoads > 0)
                 {
                     string tableName = null;
                     try
