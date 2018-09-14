@@ -21,13 +21,21 @@ namespace Data_Inspector.Controllers
             }
 
             return RedirectToAction("NoAuth", "MyLoads");
-            
+
         }
 
         // GET: UsersList/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(string id)
         {
-            return View();
+            if (User.IsInRole("Admin"))
+            {
+                using (usersConnect usersConnection = new usersConnect())
+                {
+                    return View(usersConnection.AspNetUsers.Where(x => x.Id == id).FirstOrDefault());
+                }
+            }
+
+            return RedirectToAction("NoAuth", "MyLoads");
         }
 
         // GET: UsersList/Create
@@ -52,9 +60,16 @@ namespace Data_Inspector.Controllers
             }
         }
 
-        // GET: UsersList/Edit/5
-        public ActionResult Edit(int id)
+        // GET: UsersList/UploadedFiles/5
+        public ActionResult UploadedFiles(string id)
         {
+            if (User.IsInRole("Admin"))
+            {
+                using (MyLoadsConnection usersConnection = new MyLoadsConnection())
+                {
+                    return View(usersConnection.LoadedFiles.Where(x => x.UserID == id).ToList());
+                }
+            }
             return View();
         }
 

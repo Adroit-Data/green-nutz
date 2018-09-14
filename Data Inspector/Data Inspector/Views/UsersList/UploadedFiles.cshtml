@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Data_Inspector.Models.LoadedFile>
+
+@{
+    ViewBag.Title = "UploadedFiles";
+}
+
+<h2>User Data Files</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FileName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FileType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FileImportDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UserID)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.FileName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FileType)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FileImportDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserID)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.LoadedFileID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.LoadedFileID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.LoadedFileID })
+        </td>
+    </tr>
+}
+
+</table>
