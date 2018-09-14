@@ -26,7 +26,7 @@
                     <li>@Html.ActionLink("My Loads", "Index", "MyLoads")</li>
                     <li>@Html.ActionLink("Load", "Index", "Load")</li>
                     @if (User.IsInRole("Admin")) {
-                    <li>@Html.ActionLink("Clients", "Index", "Load")</li>
+                    <li>@Html.ActionLink("Clients", "Index", "UsersList")</li>
                             }
                 </ul>
                 @Html.Partial("_LoginPartial")

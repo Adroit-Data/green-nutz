@@ -206,10 +206,14 @@
     <Compile Include="Controllers\LoadController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MyLoadsController.cs" />
+    <Compile Include="Controllers\UsersListController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AspNetUser.cs">
+      <DependentUpon>UsersListModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\DelimiterObject.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoadedFile.cs">
@@ -233,6 +237,21 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MyLoadedFilesModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\UsersListModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UsersListModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UsersListModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UsersListModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UsersListModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UsersListModel.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -253,6 +272,16 @@
       <DependentUpon>MyLoadedFilesModel.edmx</DependentUpon>
       <LastGenOutput>MyLoadedFilesModel.cs</LastGenOutput>
     </Content>
+    <Content Include="Models\UsersListModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>UsersListModel.edmx</DependentUpon>
+      <LastGenOutput>UsersListModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\UsersListModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>UsersListModel.edmx</DependentUpon>
+      <LastGenOutput>UsersListModel.cs</LastGenOutput>
+    </Content>
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
@@ -264,6 +293,13 @@
     </EntityDeploy>
     <Content Include="Models\MyLoadedFilesModel.edmx.diagram">
       <DependentUpon>MyLoadedFilesModel.edmx</DependentUpon>
+    </Content>
+    <EntityDeploy Include="Models\UsersListModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>UsersListModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\UsersListModel.edmx.diagram">
+      <DependentUpon>UsersListModel.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -316,6 +352,7 @@
     <Content Include="Views\MyLoads\View.cshtml" />
     <Content Include="Views\MyLoads\Delete.cshtml" />
     <Content Include="Views\MyLoads\NoAuth.cshtml" />
+    <Content Include="Views\UsersList\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
