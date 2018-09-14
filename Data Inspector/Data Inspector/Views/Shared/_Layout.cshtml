@@ -6,6 +6,7 @@
     <title>@ViewBag.Title - Data Inspector</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+  
 
 </head>
 <body>
@@ -24,6 +25,9 @@
                     <li>@Html.ActionLink("Home", "Index", "Home")</li> 
                     <li>@Html.ActionLink("My Loads", "Index", "MyLoads")</li>
                     <li>@Html.ActionLink("Load", "Index", "Load")</li>
+                    @if (User.IsInRole("Admin")) {
+                    <li>@Html.ActionLink("Clients", "Index", "Load")</li>
+                            }
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
