@@ -9,6 +9,7 @@ namespace Data_Inspector.Controllers
     [AllowAnonymous]
     public class HomeController : Controller
     {
+        //make some comment
         public ActionResult Index()
         {
             return View();
