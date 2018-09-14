@@ -12,10 +12,15 @@ namespace Data_Inspector.Controllers
         // GET: UsersList
         public ActionResult Index()
         {
-            using(usersConnect usersConnection = new usersConnect())
+            if (User.IsInRole("Admin"))
             {
-                return View(usersConnection.AspNetUsers.ToList());
+                using (usersConnect usersConnection = new usersConnect())
+                {
+                    return View(usersConnection.AspNetUsers.ToList());
+                }
             }
+
+            return RedirectToAction("NoAuth", "MyLoads");
             
         }
 
