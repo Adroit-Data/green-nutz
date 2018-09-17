@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Configuration;
 using System.Web.Mvc;
 using Data_Inspector.Models;
+using Microsoft.AspNet.Identity;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace Data_Inspector.Controllers
 {
@@ -59,7 +63,6 @@ namespace Data_Inspector.Controllers
                 return View();
             }
         }
-
         // GET: UsersList/UploadedFiles/5
         public ActionResult UploadedFiles(string id)
         {
@@ -72,6 +75,38 @@ namespace Data_Inspector.Controllers
             }
             return View();
         }
+        // GET: UsersList/UploadedFiles/5
+        public ActionResult View(Guid id)
+        {
+            using (MyLoadsConnection myLoads = new MyLoadsConnection())
+            {
+                int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
+
+                if (User.IsInRole("Admin") || myUserLoads > 0)
+                {
+                    string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+                    var Conn = new SqlConnection(ConnStr);
+                    string SqlString = "SELECT * FROM ADI_DataInspector.dbo.table_load_" + id.ToString().Replace('-', '_');
+                    SqlDataAdapter sda = new SqlDataAdapter(SqlString, Conn);
+                    DataTable dt = new DataTable();
+                    try
+                    {
+                        Conn.Open();
+                        sda.Fill(dt);
+                    }
+                    finally
+                    {
+                        Conn.Close();
+                    }
+                    return View(dt);
+                }
+
+                return RedirectToAction("NoAuth", "MyLoads");
+            }
+
+        }   
+    
+    
 
         // POST: UsersList/Edit/5
         [HttpPost]

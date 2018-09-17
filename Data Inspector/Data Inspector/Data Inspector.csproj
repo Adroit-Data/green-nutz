@@ -355,6 +355,7 @@
     <Content Include="Views\UsersList\Index.cshtml" />
     <Content Include="Views\UsersList\Details.cshtml" />
     <Content Include="Views\UsersList\UploadedFiles.cshtml" />
+    <Content Include="Views\UsersList\View.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,41 @@
+﻿@model  System.Data.DataTable
+@using System.Data;
+
+@{
+    ViewBag.Title = "View";
+
+}
+
+<h2>View</h2>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            @foreach (DataColumn col in Model.Columns)
+            {
+                if (col.ColumnName != "DIRowID")
+                {
+                    <th>@col.ColumnName</th>
+                }
+
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (DataRow row in Model.Rows)
+        {
+            <tr>
+                @foreach (DataColumn col in Model.Columns)
+                {
+                    if (col.ColumnName != "DIRowID")
+                    {
+                    <td>@row[col.ColumnName]</td>
+                    }
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
