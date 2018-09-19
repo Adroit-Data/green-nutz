@@ -282,6 +282,7 @@
       <DependentUpon>UsersListModel.edmx</DependentUpon>
       <LastGenOutput>UsersListModel.cs</LastGenOutput>
     </Content>
+    <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
