@@ -1,0 +1,16 @@
+﻿@model Data_Inspector.ViewModels.AllDataForUpdateViewModels
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit Selected Row</h2>
+
+    @foreach (var data in Model.DataForUpdate)
+    {
+        
+        <label style="width: 100px; text-align:right" for="@data.columnName">@data.columnName</label>
+        <input type="text" id="@data.columnName" name="price" value="@data.columnValue">
+        @Html.ActionLink("Save Changes", "update", new { TableName = Model.tableName, RowId = Model.rowId, ColumnName = data.columnName, ColumnNewValue = "???"})<br>
+    
+
+    }

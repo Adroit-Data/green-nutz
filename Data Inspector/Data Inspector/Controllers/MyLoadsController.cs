@@ -9,6 +9,9 @@ using System.Web.Mvc;
 using Data_Inspector.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using System.Data.Common;
+using Data_Inspector.ViewModels;
+
 
 namespace Data_Inspector.Controllers
 {
@@ -55,14 +58,15 @@ namespace Data_Inspector.Controllers
                 if (User.IsInRole("Admin") || myUserLoads > 0)
                 {
                     string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
-                    var Conn = new SqlConnection(ConnStr);
-                    string SqlString = "SELECT * FROM ADI_DataInspector.dbo.table_load_" + id.ToString().Replace('-', '_');
-                    SqlDataAdapter sda = new SqlDataAdapter(SqlString, Conn);
-                    DataTable dt = new DataTable();
+                    SqlConnection Conn = new SqlConnection(ConnStr);
+                    SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_register_get1]", Conn);
+                    SQLProcedure.SelectCommand.Parameters.AddWithValue("@Table", id.ToString().Replace('-', '_'));
+                    SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+                    DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
                     try
                     {
                         Conn.Open();
-                        sda.Fill(dt);
+                        SQLProcedure.Fill(dt);
                     }
                     finally
                     {
@@ -78,6 +82,49 @@ namespace Data_Inspector.Controllers
             }
         }
 
+        public ActionResult Edit(string TableName, string RowId)
+        {
+
+            using (MyLoadsConnection myLoads = new MyLoadsConnection())
+            {
+               
+                List<DataForUpdate> dataList = new List<DataForUpdate>();
+                //DataForUpdate data = new DataForUpdate();
+
+                string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+                SqlConnection Conn = new SqlConnection(ConnStr);
+
+                SqlCommand cmd = new SqlCommand("SELECT * FROM [dbo].table_load_" + TableName + " where DIRowID='" + RowId.ToString() + "'", Conn);
+
+                Conn.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+                //var data = new DataForUpdate[dr.FieldCount];
+
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+
+                        for (int index = 1; index <= dr.FieldCount-1; index++)
+                        {                       
+                            dataList.Add(new DataForUpdate { columnName = dr.GetName(index), columnValue = dr.GetString(index) });                        
+                        }
+
+                    }
+                    
+                    dr.Close();
+                }
+                var data = new AllDataForUpdateViewModels
+                {
+                    tableName = TableName,
+                    rowId = RowId.ToString(),
+                    DataForUpdate = dataList
+                };
+                return View(data);
+            }
+           
+        }
+        
         // GET: MyLoads/Create
         public ActionResult Create()
         {
@@ -157,6 +204,36 @@ namespace Data_Inspector.Controllers
 
             return RedirectToAction("Index");
 
+        }
+        public ActionResult update(string TableName, string RowId, string ColumnName, string ColumnNewValue) 
+        {
+            int myUserLoads;
+            using (MyLoadsConnection myLoads = new MyLoadsConnection())
+            {
+
+                myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID.ToString() == TableName)).Count();
+
+                
+
+            }
+            if (User.IsInRole("Admin") || myUserLoads > 0)
+            {
+
+                string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+                using (SqlConnection Conn = new SqlConnection(ConnStr))
+                {
+                    Conn.Open();
+
+                    using (SqlCommand cmd = new SqlCommand("update [dbo].table_load_" + TableName.ToString() + " set " + ColumnName + " = '"+ColumnNewValue+"' where DIRowID = '" + RowId.ToString() + "'", Conn))
+                    {
+
+                        int rows = cmd.ExecuteNonQuery();
+                        
+                    }
+                }
+            }
+
+            return RedirectToAction("Edit", new {TableName,RowId});
         }
     }
 }

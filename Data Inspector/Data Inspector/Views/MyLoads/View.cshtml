@@ -1,4 +1,5 @@
 ﻿@model  System.Data.DataTable
+
 @using System.Data;
 
 @{
@@ -13,29 +14,57 @@
         <tr>
             @foreach (DataColumn col in Model.Columns)
             {
+
+
                 if (col.ColumnName != "DIRowID")
                 {
                     <th>@col.ColumnName</th>
                 }
-
+                else
+                {
+                    <th>Edit</th>
+                }
             }
         </tr>
+
+
+
     </thead>
     <tbody>
         @foreach (DataRow row in Model.Rows)
         {
+
             <tr>
+
+
+
                 @foreach (DataColumn col in Model.Columns)
                 {
-                    if (col.ColumnName != "DIRowID")
+
+                    if (col.ColumnName == "DIRowID")
                     {
-                    <td>@row[col.ColumnName]</td>
+                        <td>@Html.ActionLink("Edit", "Edit", new { TableName = @Model.TableName, RowId = @row[col.ColumnName].ToString()}) </td>
+
+                    }
+                    else
+                    {
+                        <td>@row[col.ColumnName]</td>
                     }
                 }
+
             </tr>
+
+
         }
-    </tbody>
+</tbody>
+   
 </table>
+<h3>
+    table name should be here >>>@Model.TableName
+
+</h3>
+
+
 
 
 
