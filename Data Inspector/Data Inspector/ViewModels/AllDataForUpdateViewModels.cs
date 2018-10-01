@@ -11,5 +11,6 @@ namespace Data_Inspector.ViewModels
         public string tableName { get; set; }
         public string rowId { get; set; }
         public List<DataForUpdate> DataForUpdate { get; set; }
+
     }
 }
