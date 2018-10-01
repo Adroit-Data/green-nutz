@@ -214,6 +214,7 @@
     <Compile Include="Models\AspNetUser.cs">
       <DependentUpon>UsersListModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DataForUpdate.cs" />
     <Compile Include="Models\DelimiterObject.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoadedFile.cs">
@@ -254,6 +255,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\AllDataForUpdateViewModels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -1136,10 +1138,13 @@
     <Content Include="Views\UsersList\UploadedFiles.cshtml" />
     <Content Include="Views\UsersList\View.cshtml" />
     <Content Include="Scripts\version.json" />
+    <Content Include="Views\MyLoads\Edit.cshtml" />
+    <Content Include="Views\Shared\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\Upload\" />
+    <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -211,7 +211,9 @@ namespace Data_Inspector.Controllers
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
 
-                myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID.ToString() == TableName)).Count();
+                string tN = TableName.Replace("_", "-");
+
+                myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID.ToString() == tN)).Count();
 
                 
 
