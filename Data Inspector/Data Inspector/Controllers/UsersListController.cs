@@ -145,5 +145,13 @@ namespace Data_Inspector.Controllers
                 return View();
             }
         }
+
+        public JsonResult GetUsers()
+        {
+            usersConnect e = new usersConnect();
+            var result = e.AspNetUsers.ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+
+        }
     }
 }
