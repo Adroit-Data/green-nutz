@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using Data_Inspector.Models;
@@ -11,6 +12,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System.Data.Common;
 using Data_Inspector.ViewModels;
+using Newtonsoft.Json;
 
 
 namespace Data_Inspector.Controllers
@@ -237,5 +239,53 @@ namespace Data_Inspector.Controllers
 
             return RedirectToAction("Edit", new {TableName,RowId});
         }
+
+
+        public ContentResult GetTableLoadData(Guid id)
+        {
+            //usersConnect e = new usersConnect();
+            //var result = e.AspNetUsers.ToList();
+            //return Json(result, JsonRequestBehavior.AllowGet);
+
+                    string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+                    SqlConnection Conn = new SqlConnection(ConnStr);
+                    SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_register_get1]", Conn);
+                    SQLProcedure.SelectCommand.Parameters.AddWithValue("@Table", id.ToString().Replace('-', '_'));
+                    SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+                    DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+                    Conn.Open();
+                    SQLProcedure.Fill(dt);
+                    Conn.Close();
+
+            /*System.Web.Script.Serialization.JavaScriptSerializer serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
+            Dictionary<string, object> row;
+            foreach (DataRow dr in dt.Rows)
+            {
+                row = new Dictionary<string, object>();
+                foreach (DataColumn col in dt.Columns)
+                {
+                    row.Add(col.ColumnName, dr[col]);
+                }
+                rows.Add(row);
+            }
+
+            var list = serializer.Serialize(rows);
+            */
+
+            //var list = "[{\"DIRowID\":\"b177e38e-1660-4a8a-8407-6716b5a4282c\",\"TestField1\":\"TestValue1\",\"TestField2\":\"TestValue2\"}]";
+
+
+            var list = JsonConvert.SerializeObject(dt, Formatting.None, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            });
+
+            //return Json(list, JsonRequestBehavior.AllowGet);
+            return Content(list);
+
+        }
+
+
     }
 }
