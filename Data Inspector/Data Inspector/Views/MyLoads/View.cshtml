@@ -79,24 +79,43 @@
             <tr>
                 @foreach (DataColumn col in Model.Columns)
                 {                
-                    if (col.ColumnName != "DIRowID")
-                    {
-                        <th>@col.ColumnName&nbsp;<a ng-click="sort_by('TestField1')"><i class="fas fa-sort"></i></a></th>
-                    }
+                    //if (col.ColumnName != "DIRowID")
+                    //{
+                        <th>@col.ColumnName&nbsp;<a ng-click="sort_by('@col.ColumnName')"><i class="fas fa-sort"></i></a></th>
+                    //}
                 }
             </tr>
-            <tr ng-repeat="r in tableload.data | filter : searchData">
-                    @foreach (DataColumn col in Model.Columns)
-                    {
-                        if (col.ColumnName != "DIRowID")
-                        {
-                            string jsCol = "{{r." + col.ColumnName + "}}";
-                            <td>@jsCol</td>
-                        }
-
-                    }                         
-            </tr>
+            <tr ng-repeat="r in tableload.data | filter : searchData" ng-include="getTemplate(r)">
+            </tr>            
         </table>
+        <script type="text/ng-template" id="display">
+            @foreach (DataColumn col in Model.Columns)
+            {
+                //if (col.ColumnName != "DIRowID")
+               // {
+                    string jsCol = "{{r." + col.ColumnName + "}}";
+                    <td>@jsCol</td>
+               // }
+
+            }
+            <td>
+                <button ng-click="editData(r)">Edit</button>
+            </td>
+        </script>
+        <script type="text/ng-template" id="edit">
+            @foreach (DataColumn col in Model.Columns)
+            {
+                //if (col.ColumnName != "DIRowID")
+               // {                    
+                    <td><input type="text" ng-model="tableload.selected.@col.ColumnName" /></td>
+               // }
+
+            }
+            <td>
+                <button ng-click="saveData($index)">Save</button>
+                <button ng-click="reset()">Cancel</button>
+            </td>
+        </script>
     </div>
 </div>
 

@@ -14,9 +14,31 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid ,TableL
         TableLoadService.getTableLoadData(tableid)
             .then(function (tblload) {
                 $scope.tableload = tblload;
+                $scope.tableload.selected = {};
                 console.log($scope.tableload);
             });
     }
+
+    // gets the template to ng-include for a table row / item
+    $scope.getTemplate = function (r) {
+        if (r.DIRowID === $scope.tableload.selected.DIRowID) return 'edit';
+         return 'display';
+        //return 'display';
+    };
+
+    $scope.editData = function (r) {
+        $scope.tableload.selected = angular.copy(r);
+    };
+
+    $scope.saveData = function (idx) {
+        console.log("Saving data");
+        $scope.tableload.data[idx] = angular.copy($scope.tableload.selected);
+        $scope.reset();
+    };
+
+    $scope.reset = function () {
+        $scope.tableload.selected = {};
+    };
 
 });
 
