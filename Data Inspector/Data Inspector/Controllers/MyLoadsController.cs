@@ -51,6 +51,7 @@ namespace Data_Inspector.Controllers
         // GET: MyLoads/View/5
         public ActionResult View(Guid id)
         {
+            ViewBag.TableID = id;
             //Check Data belongs to user.
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {

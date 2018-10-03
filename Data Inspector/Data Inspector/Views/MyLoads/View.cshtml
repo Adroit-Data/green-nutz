@@ -59,14 +59,14 @@
 </tbody>
    
 </table>
-<h3>
-    table name should be here >>>@Model.TableName
-
-</h3>
 
 
 @section scripts{
     <script src="~/Scripts/tableloaddata.js"></script>
+    <script>
+        var tableid = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
+        TableLoadApp.value("tableid", tableid);
+    </script>
 }
 
 <h2>View</h2>

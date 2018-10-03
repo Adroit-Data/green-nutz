@@ -1,14 +1,17 @@
 ﻿var TableLoadApp = angular.module('TableLoadApp', [])
 
-TableLoadApp.controller('TableLoadController', function ($scope, TableLoadService){
+TableLoadApp.controller('TableLoadController', function ($scope, tableid ,TableLoadService) {
 
-    $scope.sortType = 'DIRowID'; // set the default sort type
-    $scope.sortReverse = false;  // set the default sort order
-    $scope.searchFish = '';     // set the default search/filter term
+    //$scope.init = function (tableid) {
+    //    $scope.tableid = tableid;
+    // }
+    //$scope.tableid = '8BE8750A-431C-440A-A067-B4371364DC31';
+    $scope.tableid = tableid;
 
-    getTableLoadData();
-    function getTableLoadData() {
-        TableLoadService.getTableLoadData()
+    getTableLoadData($scope.tableid);
+
+    function getTableLoadData(tableid) {
+        TableLoadService.getTableLoadData(tableid)
             .then(function (tblload) {
                 $scope.tableload = tblload;
                 console.log($scope.tableload);
@@ -17,21 +20,24 @@ TableLoadApp.controller('TableLoadController', function ($scope, TableLoadServic
 
 });
 
-TableLoadApp.factory('TableLoadService', ['$http', function ($http) {
 
+TableLoadApp.factory('TableLoadService', ['$http', function ($http) {
 
     var TableLoadService = {};
 
-    TableLoadService.getTableLoadData = function () {
+    TableLoadService.getTableLoadData = function (id) {       
 
-        return $http.get('/MyLoads/GetTableLoadData/8be8750a-431c-440a-a067-b4371364dc31');
-        //return $http.get('/UsersList/GetUsers');
+        var geturl = '/MyLoads/GetTableLoadData/' + id;
+
+        return $http.get(geturl);
 
     };
 
     return TableLoadService;
 
-
-
 }]);
+
+
+
+
 
