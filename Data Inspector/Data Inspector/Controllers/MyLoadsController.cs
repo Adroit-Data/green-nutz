@@ -211,13 +211,13 @@ namespace Data_Inspector.Controllers
 
         // POST: MyLoads/update
         [HttpPost]
-        public ActionResult update(FormCollection form) 
+        public Boolean update(string TableName, string RowId, string ColumnName, string ColumnNewValue) 
         {
 
-            var TableName = Request["TableName"] ;
-            var RowId = Request["RowId"];
-            var ColumnName = Request["ColumnName"];
-            var ColumnNewValue = Request["ColumnNewValue"];
+            //var TableName = Request["TableName"] ;
+            //var RowId = Request["RowId"];
+            //var ColumnName = Request["ColumnName"];
+            //var ColumnNewValue = Request["ColumnNewValue"];
 
 
 
@@ -225,7 +225,7 @@ namespace Data_Inspector.Controllers
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
 
-                string tN = TableName.Replace("_", "-");
+                string tN = TableName;
 
                 myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID.ToString() == tN)).Count();
 
@@ -240,7 +240,7 @@ namespace Data_Inspector.Controllers
                 {
                     Conn.Open();
 
-                    using (SqlCommand cmd = new SqlCommand("update [dbo].table_load_" + TableName.ToString() + " set " + ColumnName + " = '"+ColumnNewValue+"' where DIRowID = '" + RowId.ToString() + "'", Conn))
+                    using (SqlCommand cmd = new SqlCommand("update [dbo].table_load_" + TableName.ToString().Replace("-", "_") + " set " + ColumnName + " = '"+ColumnNewValue+"' where DIRowID = '" + RowId.ToString() + "'", Conn))
                     {
 
                         int rows = cmd.ExecuteNonQuery();
@@ -249,7 +249,7 @@ namespace Data_Inspector.Controllers
                 }
             }
 
-            return RedirectToAction("Edit", new {TableName,RowId});
+            return true;
         }
 
 

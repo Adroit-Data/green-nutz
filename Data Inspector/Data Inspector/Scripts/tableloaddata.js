@@ -36,7 +36,7 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
         $http({
             method: 'POST',
             url: '/MyLoads/update',
-            data: { "TableName": "8BE8750A-431C-440A-A067-B4371364DC31", "RowId": "B177E38E-1660-4A8A-8407-6716B5A4282C", "ColumnName": "TestField5", "ColumnNewValue": "Marc" }
+            params: { "TableName": "8BE8750A-431C-440A-A067-B4371364DC31", "RowId": "B177E38E-1660-4A8A-8407-6716B5A4282C", "ColumnName": "TestField5", "ColumnNewValue": "long legs" }
         })
         .then(function(response) {
             // success
