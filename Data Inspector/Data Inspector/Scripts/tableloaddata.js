@@ -1,6 +1,6 @@
 ﻿var TableLoadApp = angular.module('TableLoadApp', [])
 
-TableLoadApp.controller('TableLoadController', function ($scope, tableid ,TableLoadService) {
+TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http ,TableLoadService) {
 
     //$scope.init = function (tableid) {
     //    $scope.tableid = tableid;
@@ -23,7 +23,6 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid ,TableL
     $scope.getTemplate = function (r) {
         if (r.DIRowID === $scope.tableload.selected.DIRowID) return 'edit';
          return 'display';
-        //return 'display';
     };
 
     $scope.editData = function (r) {
@@ -32,9 +31,28 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid ,TableL
 
     $scope.saveData = function (idx) {
         console.log("Saving data");
+        //Update DB -- TableName, string RowId, string ColumnName, string ColumnNewValue
+
+        $http({
+            method: 'POST',
+            url: '/MyLoads/update',
+            data: { "TableName": "8BE8750A-431C-440A-A067-B4371364DC31", "RowId": "B177E38E-1660-4A8A-8407-6716B5A4282C", "ColumnName": "TestField5", "ColumnNewValue": "Marc" }
+        })
+        .then(function(response) {
+            // success
+            getTableLoadData($scope.tableid);
+        }, 
+        function(response) { // optional
+            // failed
+        });
+
+        //Update View
         $scope.tableload.data[idx] = angular.copy($scope.tableload.selected);
         $scope.reset();
+
     };
+
+
 
     $scope.reset = function () {
         $scope.tableload.selected = {};

@@ -208,8 +208,19 @@ namespace Data_Inspector.Controllers
             return RedirectToAction("Index");
 
         }
-        public ActionResult update(string TableName, string RowId, string ColumnName, string ColumnNewValue) 
+
+        // POST: MyLoads/update
+        [HttpPost]
+        public ActionResult update(FormCollection form) 
         {
+
+            var TableName = Request["TableName"] ;
+            var RowId = Request["RowId"];
+            var ColumnName = Request["ColumnName"];
+            var ColumnNewValue = Request["ColumnNewValue"];
+
+
+
             int myUserLoads;
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
