@@ -7,60 +7,6 @@
 
 }
 
-<h2>View</h2>
-
-<table class="table table-hover">
-    <thead>
-        <tr>
-            @foreach (DataColumn col in Model.Columns)
-            {
-
-
-                if (col.ColumnName != "DIRowID")
-                {
-                    <th>@col.ColumnName</th>
-                }
-                else
-                {
-                    <th>Edit</th>
-                }
-            }
-        </tr>
-
-
-
-    </thead>
-    <tbody>
-        @foreach (DataRow row in Model.Rows)
-        {
-
-            <tr>
-
-
-
-                @foreach (DataColumn col in Model.Columns)
-                {
-
-                    if (col.ColumnName == "DIRowID")
-                    {
-                        <td>@Html.ActionLink("Edit", "Edit", new { TableName = @Model.TableName, RowId = @row[col.ColumnName].ToString()}) </td>
-
-                    }
-                    else
-                    {
-                        <td>@row[col.ColumnName]</td>
-                    }
-                }
-
-            </tr>
-
-
-        }
-</tbody>
-   
-</table>
-
-
 @section scripts{
     <script src="~/Scripts/tableloaddata.js"></script>
     <script>
@@ -78,12 +24,13 @@
         <table class="table table-striped table-condensed table-hover">
             <tr>
                 @foreach (DataColumn col in Model.Columns)
-                {                
-                    //if (col.ColumnName != "DIRowID")
-                    //{
+                {
+                    if (col.ColumnName != "DIRowID")
+                    {
                         <th>@col.ColumnName&nbsp;<a ng-click="sort_by('@col.ColumnName')"><i class="fas fa-sort"></i></a></th>
-                    //}
+                    }                    
                 }
+                <th></th>
             </tr>
             <tr ng-repeat="r in tableload.data | filter : searchData" ng-include="getTemplate(r)">
             </tr>            
@@ -91,12 +38,15 @@
         <script type="text/ng-template" id="display">
             @foreach (DataColumn col in Model.Columns)
             {
-                //if (col.ColumnName != "DIRowID")
-               // {
-                    string jsCol = "{{r." + col.ColumnName + "}}";
+                string jsCol = "{{r." + col.ColumnName + "}}";
+                if (col.ColumnName != "DIRowID")
+                {                    
                     <td>@jsCol</td>
-               // }
-
+                }
+                else
+                {                   
+                    <td style="display: none">@jsCol</td>
+                }
             }
             <td>
                 <button ng-click="editData(r)">Edit</button>
@@ -105,14 +55,13 @@
         <script type="text/ng-template" id="edit">
             @foreach (DataColumn col in Model.Columns)
             {
-                //if (col.ColumnName != "DIRowID")
-               // {                    
+                if (col.ColumnName != "DIRowID")
+                {
                     <td><input type="text" ng-model="tableload.selected.@col.ColumnName" /></td>
-               // }
-
+                }
             }
             <td>
-                <button ng-click="saveData($index)">Save</button>
+                <button ng-click="saveData($index,r,tableload.selected)">Save</button>
                 <button ng-click="reset()">Cancel</button>
             </td>
         </script>

@@ -25,27 +25,47 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
          return 'display';
     };
 
+    // changes the template from display to edit and copies the existing values over to the form
     $scope.editData = function (r) {
         $scope.tableload.selected = angular.copy(r);
     };
 
-    $scope.saveData = function (idx) {
+    //idx is the row number, r is the row data (original data), selected is the updated value data (changed data values)
+    $scope.saveData = function (idx, r, selected) {
         console.log("Saving data");
-        //Update DB -- TableName, string RowId, string ColumnName, string ColumnNewValue
+        
+        // set the rowID that's being updated
+        $scope.rowid = r.DIRowID;
 
-        $http({
-            method: 'POST',
-            url: '/MyLoads/update',
-            params: { "TableName": "8BE8750A-431C-440A-A067-B4371364DC31", "RowId": "B177E38E-1660-4A8A-8407-6716B5A4282C", "ColumnName": "TestField5", "ColumnNewValue": "long legs" }
-        })
-        .then(function(response) {
-            // success
-            getTableLoadData($scope.tableid);
-        }, 
-        function(response) { // optional
-            // failed
-        });
+        // for each field/column, save to DB
+        var x;
+        for (x in r) {
 
+
+            $scope.value = selected[x];
+
+            // don't try to update the row id or anything else in r that is undefined object type
+            if (typeof $scope.value != 'undefined' && x != 'DIRowID' )
+            {
+                (function (r) {
+                    $http({
+                        method: 'POST',
+                        url: '/MyLoads/update',
+                        params: { "TableName": $scope.tableid, "RowId": $scope.rowid, "ColumnName": x, "ColumnNewValue": $scope.value }
+                    })
+                .then(function (response) {
+                    // success
+                    console.log("Saved data");
+                },
+                function (response) { // optional
+                    // failed
+                });
+                })();
+            }
+        }
+
+        //refresh the data
+        getTableLoadData($scope.tableid);
         //Update View
         $scope.tableload.data[idx] = angular.copy($scope.tableload.selected);
         $scope.reset();

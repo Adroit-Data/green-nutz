@@ -255,9 +255,6 @@ namespace Data_Inspector.Controllers
 
         public ContentResult GetTableLoadData(Guid id)
         {
-            //usersConnect e = new usersConnect();
-            //var result = e.AspNetUsers.ToList();
-            //return Json(result, JsonRequestBehavior.AllowGet);
 
                     string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
                     SqlConnection Conn = new SqlConnection(ConnStr);
@@ -269,31 +266,11 @@ namespace Data_Inspector.Controllers
                     SQLProcedure.Fill(dt);
                     Conn.Close();
 
-            /*System.Web.Script.Serialization.JavaScriptSerializer serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-            List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
-            Dictionary<string, object> row;
-            foreach (DataRow dr in dt.Rows)
-            {
-                row = new Dictionary<string, object>();
-                foreach (DataColumn col in dt.Columns)
-                {
-                    row.Add(col.ColumnName, dr[col]);
-                }
-                rows.Add(row);
-            }
-
-            var list = serializer.Serialize(rows);
-            */
-
-            //var list = "[{\"DIRowID\":\"b177e38e-1660-4a8a-8407-6716b5a4282c\",\"TestField1\":\"TestValue1\",\"TestField2\":\"TestValue2\"}]";
-
-
             var list = JsonConvert.SerializeObject(dt, Formatting.None, new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             });
 
-            //return Json(list, JsonRequestBehavior.AllowGet);
             return Content(list);
 
         }

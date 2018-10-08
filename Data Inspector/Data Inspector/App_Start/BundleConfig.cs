@@ -25,7 +25,7 @@ namespace Data_Inspector
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/site.css").Include("~/Content/font-awesome.css", new CssRewriteUrlTransform()));
+                      "~/Content/site.css").Include("~/Content/all.css", new CssRewriteUrlTransform()));
             bundles.Add(new ScriptBundle("~/bundles/angular").Include(
                         "~/Scripts/angular.js"));
         }
