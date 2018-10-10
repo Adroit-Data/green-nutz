@@ -62,7 +62,7 @@ namespace Data_Inspector.Controllers
                 {
                     string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
                     SqlConnection Conn = new SqlConnection(ConnStr);
-                    SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_register_get1]", Conn);
+                    SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_GetTableLoadData]", Conn);
                     SQLProcedure.SelectCommand.Parameters.AddWithValue("@Table", id.ToString().Replace('-', '_'));
                     SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
                     DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
@@ -258,13 +258,35 @@ namespace Data_Inspector.Controllers
 
                     string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
                     SqlConnection Conn = new SqlConnection(ConnStr);
-                    SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_register_get1]", Conn);
+                    SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_GetTableLoadData]", Conn);
                     SQLProcedure.SelectCommand.Parameters.AddWithValue("@Table", id.ToString().Replace('-', '_'));
                     SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
                     DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
                     Conn.Open();
                     SQLProcedure.Fill(dt);
                     Conn.Close();
+
+            var list = JsonConvert.SerializeObject(dt, Formatting.None, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            });
+
+            return Content(list);
+
+        }
+
+        public ContentResult GetTableLoadHeaders(Guid id)
+        {
+
+            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+            SqlConnection Conn = new SqlConnection(ConnStr);
+            SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_GetTableLoadHeaders]", Conn);
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@Table", id.ToString().Replace('-', '_'));
+            SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+            DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+            Conn.Open();
+            SQLProcedure.Fill(dt);
+            Conn.Close();
 
             var list = JsonConvert.SerializeObject(dt, Formatting.None, new JsonSerializerSettings()
             {

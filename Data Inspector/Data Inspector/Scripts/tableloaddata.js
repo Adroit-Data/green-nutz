@@ -15,6 +15,7 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
             .then(function (tblload) {
                 $scope.tableload = tblload;
                 $scope.tableload.selected = {};
+                buildheaders();
                 console.log($scope.tableload);
             });
     }
@@ -83,9 +84,20 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
     };
 
     //SORT DATA
-    $scope.headers = ["TestField1", "TestField2", "TestField3", "TestField4", "TestField5"];
+        
+    function buildheaders() {
+        var x;
+        var head = $scope.tableload.data[0];
+        var built = [];
+        for (x in head) {
+            if (x != "DIRowID") {
+                built.push(x);
+            }            
+        }
+        $scope.headers = built;
+    };
 
-    $scope.sortColumn = 'TestField1';
+    $scope.sortColumn = false;
 
     $scope.reverseSort = false;
 
@@ -94,6 +106,8 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
 
         $scope.sortColumn = $scope.headers[columnIndex];
     }
+
+
 
 });
 
