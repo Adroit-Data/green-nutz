@@ -26,7 +26,9 @@
                 <th ng-repeat="header in headers">
                     {{headers[$index]}} <a ng-click="sortData($index, r)"><i class="fas fa-sort"></i></a>
                 </th>              
-                <th></th>
+                <th>
+                    <button ng-click="reload()">Unsort</button>
+                </th>
             </tr>
             <tr ng-repeat="r in tableload.data | orderBy : sortColumn : reverseSort | filter : searchData" ng-include="getTemplate(r)">
             </tr>            

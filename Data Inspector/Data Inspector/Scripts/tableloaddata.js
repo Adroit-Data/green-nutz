@@ -83,6 +83,10 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
         $scope.tableload.selected = {};
     };
 
+    $scope.reload = function() {
+        location.reload();
+    };
+
     //SORT DATA
         
     function buildheaders() {
