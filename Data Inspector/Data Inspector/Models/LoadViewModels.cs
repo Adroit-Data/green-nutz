@@ -162,12 +162,13 @@ namespace Data_Inspector.Models
 
         enum dataType
         {
-            System_Boolean = 0,
-            System_Int32 = 1,
-            System_Int64 = 2,
-            System_Double = 3,
-            System_DateTime = 4,
-            System_String = 5
+            System_String = 0,
+            System_Boolean = 1,
+            System_Int32 = 2,
+            System_Int64 = 3,
+            System_Double = 4,
+            System_DateTime = 5
+            
         }
 
         private dataType ParseString(string str)
@@ -214,16 +215,19 @@ namespace Data_Inspector.Models
             colSize = strMaxValue.Length;
 
             //get max typelevel of first n to 50 rows
-            int sampleSize = Math.Max(values.Count(), 50);
+            int sampleSize = values.Count(); //Math.Max(values.Count(), 50);
             int maxLevel = Math.Max(minValueLevel, maxValueLevel);
 
             for (int i = 0; i < sampleSize; i++)
             {
+                //maxLevel = Math.Max((int)ParseString(values[i].ToString()), maxLevel);
                 maxLevel = Math.Max((int)ParseString(values[i].ToString()), maxLevel);
             }
 
             string enumCheck = ((dataType)maxLevel).ToString();
             T = Type.GetType(enumCheck.Replace('_', '.'));
+
+         
 
             //if typelevel = int32 check for bit only data & cast to bool
             if (maxLevel == 1 && Convert.ToInt32(strMinValue) == 0 && Convert.ToInt32(strMaxValue) == 1)
