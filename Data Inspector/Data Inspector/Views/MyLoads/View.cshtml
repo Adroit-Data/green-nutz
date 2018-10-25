@@ -24,7 +24,7 @@
         <table class="table table-striped table-condensed table-hover">
             <tr>
                 <th ng-repeat="header in headers">
-                    {{headers[$index]}} <a ng-click="sortData($index, r)"><i class="fas fa-sort"></i></a>
+                    {{headers[$index]}} <a ng-click="sortData($index)"><i class="fas fa-sort"></i></a>
                 </th>              
                 <th>
                     <button ng-click="reload()">Unsort</button>

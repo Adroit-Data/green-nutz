@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Core.Objects.DataClasses;
+using System.Linq;
+using System.Data;
 
 namespace Data_Inspector.Models
 {
@@ -129,6 +132,111 @@ namespace Data_Inspector.Models
 
             return sql;
         }
+
+        public string GenerateFinalTableSql(string[] fields, string loadid)
+        {
+            string sql;
+            string fieldsql;
+            Type dataType;
+
+            sql = "CREATE TABLE table_view_" + loadid + " (DIRowID uniqueidentifier not null,";
+            foreach (string item in fields)
+            {
+                string field = item.Replace("\"", "");
+
+                //identify datatype
+                fieldsql = "SELECT " + field + " FROM table_load_" + loadid + " WHERE " + field + " IS NOT NULL";
+                using (var newTableCtx = new LoadedFiles())
+                {
+                    var values = newTableCtx.Database.SqlQuery<string>(fieldsql).ToList();
+                    //nvarchar(max), Int32, etc do not forget the , on the end
+                    dataType = GetColumnType(values);
+                    sql = sql + " " + field + " " + dataType + ",";
+
+                }             
+                
+            }
+
+                return sql;
+        }
+
+        enum dataType
+        {
+            System_Boolean = 0,
+            System_Int32 = 1,
+            System_Int64 = 2,
+            System_Double = 3,
+            System_DateTime = 4,
+            System_String = 5
+        }
+
+        private dataType ParseString(string str)
+        {
+
+            bool boolValue;
+            Int32 intValue;
+            Int64 bigintValue;
+            double doubleValue;
+            DateTime dateValue;
+
+            // Place checks higher in if-else statement to give higher priority to type.
+
+            if (bool.TryParse(str, out boolValue))
+                return dataType.System_Boolean;
+            else if (Int32.TryParse(str, out intValue))
+                return dataType.System_Int32;
+            else if (Int64.TryParse(str, out bigintValue))
+                return dataType.System_Int64;
+            else if (double.TryParse(str, out doubleValue))
+                return dataType.System_Double;
+            else if (DateTime.TryParse(str, out dateValue))
+                return dataType.System_DateTime;
+            else return dataType.System_String;
+
+        }
+
+        /// <summary>
+        /// Gets the datatype for the Datacolumn column
+        /// </summary>
+        /// <returns></returns>
+        public Type GetColumnType(List<string> values)
+        {
+            Type T;
+
+            int colSize;
+
+            //get smallest and largest values
+            string strMinValue = values.Min();
+            int minValueLevel = (int)ParseString(strMinValue);
+
+            string strMaxValue = values.Max();
+            int maxValueLevel = (int)ParseString(strMaxValue);
+            colSize = strMaxValue.Length;
+
+            //get max typelevel of first n to 50 rows
+            int sampleSize = Math.Max(values.Count(), 50);
+            int maxLevel = Math.Max(minValueLevel, maxValueLevel);
+
+            for (int i = 0; i < sampleSize; i++)
+            {
+                maxLevel = Math.Max((int)ParseString(values[i].ToString()), maxLevel);
+            }
+
+            string enumCheck = ((dataType)maxLevel).ToString();
+            T = Type.GetType(enumCheck.Replace('_', '.'));
+
+            //if typelevel = int32 check for bit only data & cast to bool
+            if (maxLevel == 1 && Convert.ToInt32(strMinValue) == 0 && Convert.ToInt32(strMaxValue) == 1)
+            {
+                T = Type.GetType("System.Boolean");
+            }
+
+            if (maxLevel != 5) colSize = -1;
+
+
+            return T;
+        }
+
 
     }
 

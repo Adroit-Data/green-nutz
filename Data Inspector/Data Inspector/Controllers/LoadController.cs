@@ -108,12 +108,22 @@ namespace Data_Inspector.Controllers
 
                             streamReader.Close();
 
+                            // delete the copied file
                             if (System.IO.File.Exists(path))
                             {
                                 System.IO.File.Delete(path);
                             }
-                            //return Loaded View passing the table id
 
+                            // identifying data types and copy data over
+                            sql = LoadView.GenerateFinalTableSql(fields, sqlproofloadid);
+                            //using (var newTableCtx = new LoadedFiles())
+                            //{
+                            //    int noOfRecordsInserted = newTableCtx.Database.ExecuteSqlCommand(sql);
+                            //}
+
+                            System.Windows.Forms.MessageBox.Show(sql);
+
+                            //return Loaded View passing the table id
                             return Redirect("MyLoads");
 
                         }
