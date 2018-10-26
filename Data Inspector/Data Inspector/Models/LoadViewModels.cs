@@ -133,13 +133,13 @@ namespace Data_Inspector.Models
             return sql;
         }
 
-        public string GenerateFinalTableSql(string[] fields, string loadid)
+        public void SetupColumnsDataTypes(string[] fields, string loadid)
         {
-            string sql;
             string fieldsql;
             Type dataType;
+            string sqlDataType;
+            List<string>sqlDataTypeList = new List<string>();
 
-            sql = "CREATE TABLE table_view_" + loadid + " (DIRowID uniqueidentifier not null,";
             foreach (string item in fields)
             {
                 string field = item.Replace("\"", "");
@@ -151,24 +151,60 @@ namespace Data_Inspector.Models
                     var values = newTableCtx.Database.SqlQuery<string>(fieldsql).ToList();
                     //nvarchar(max), Int32, etc do not forget the , on the end
                     dataType = GetColumnType(values);
-                    sql = sql + " " + field + " " + dataType + ",";
+                    if (dataType.ToString() == "System.String")
+                    {
+                        sqlDataType = "varchar (max)";
+                    }
+                    else if (dataType.ToString() == "System.Boolean")
+                    {
+                        sqlDataType = "bit";
+                    }
+                    else if (dataType.ToString() == "System.Int32")
+                    {
+                        sqlDataType = "int";
+                    }
+                    else if (dataType.ToString() == "System.Int64")
+                    {
+                        sqlDataType = "bigint";
+                    }
+                    else if (dataType.ToString() == "System.Double")
+                    {
+                        sqlDataType = "float (50)";
+                    }
+                    else if (dataType.ToString() == "System.DateTime")
+                    {
+                        sqlDataType = "datetime";
+                    }
+                    else
+                    {
+                        sqlDataType = "nvarchar (max)";
+                    }
+
+                    sqlDataTypeList.Add(sqlDataType);
 
                 }             
                 
             }
-
-                return sql;
+            for(int x=0; x<sqlDataTypeList.Count; x++)
+            {
+                using (var newTableCtx = new LoadedFiles())
+                {
+                    int noOfTablesCreated = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN "+fields[x]+" "+sqlDataTypeList[x]+";");
+                }
+            }
+   
         }
 
         enum dataType
         {
-            System_String = 0,
-            System_Boolean = 1,
-            System_Int32 = 2,
-            System_Int64 = 3,
-            System_Double = 4,
-            System_DateTime = 5
-            
+            System_String = 0, // varchar
+            System_Boolean = 1, // bit
+            System_Int32 = 2, // int
+            System_Int64 = 3, // bigint
+            System_Double = 4, // float
+            System_DateTime = 5 // datetime
+            //above mappings have been done acordingly to "SQL Server Data Type Mappings"  https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/sql-server-data-type-mappings
+
         }
 
         private dataType ParseString(string str)
@@ -241,10 +277,8 @@ namespace Data_Inspector.Models
             return T;
         }
 
-
     }
-
-    
 
 
 }
+

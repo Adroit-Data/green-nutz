@@ -113,15 +113,9 @@ namespace Data_Inspector.Controllers
                             {
                                 System.IO.File.Delete(path);
                             }
-
-                            // identifying data types and copy data over
-                            sql = LoadView.GenerateFinalTableSql(fields, sqlproofloadid);
-                            //using (var newTableCtx = new LoadedFiles())
-                            //{
-                            //    int noOfRecordsInserted = newTableCtx.Database.ExecuteSqlCommand(sql);
-                            //}
-
-                            System.Windows.Forms.MessageBox.Show(sql);
+                            // identifying data types and altering table columns
+                            LoadView.SetupColumnsDataTypes(fields, sqlproofloadid);
+                    
 
                             //return Loaded View passing the table id
                             return Redirect("MyLoads");
