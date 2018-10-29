@@ -144,12 +144,12 @@ namespace Data_Inspector.Models
             {
                 string field = item.Replace("\"", "");
 
-                //identify datatype
+                //identify datatype using function GetColumnType() 
                 fieldsql = "SELECT " + field + " FROM table_load_" + loadid + " WHERE " + field + " IS NOT NULL";
                 using (var newTableCtx = new LoadedFiles())
                 {
                     var values = newTableCtx.Database.SqlQuery<string>(fieldsql).ToList();
-                    //nvarchar(max), Int32, etc do not forget the , on the end
+                    //building sqlDataTypeList based on function GetColumnType() results
                     dataType = GetColumnType(values);
                     if (dataType.ToString() == "System.String")
                     {
@@ -185,11 +185,17 @@ namespace Data_Inspector.Models
                 }             
                 
             }
-            for(int x=0; x<sqlDataTypeList.Count; x++)
+            // setting appropriate Data Types for each column
+            for (int x=0; x<sqlDataTypeList.Count; x++)
             {
                 using (var newTableCtx = new LoadedFiles())
-                {
-                    int noOfTablesCreated = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN "+fields[x]+" "+sqlDataTypeList[x]+";");
+                {   //unifying Date Format (yyyy-mm-dd) to be able to alter column and set as "datetime" data type. If column has invalid date it will be set as '1753-01-01' to pointed out wrong value and differentiate from not populated(NULL) - we must somehow catch this and reported 
+                    if (sqlDataTypeList[x] == "datetime")
+                    {
+                    int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101), TRY_CONVERT(DATE, '1753-01-01', 102));");
+                    }
+
+                    int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN "+fields[x]+" "+sqlDataTypeList[x]+";");
                 }
             }
    
@@ -215,6 +221,7 @@ namespace Data_Inspector.Models
             Int64 bigintValue;
             double doubleValue;
             DateTime dateValue;
+            
 
             // Place checks higher in if-else statement to give higher priority to type.
 
