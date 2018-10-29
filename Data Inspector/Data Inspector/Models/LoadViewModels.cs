@@ -144,8 +144,8 @@ namespace Data_Inspector.Models
             {
                 string field = item.Replace("\"", "");
 
-                //identify datatype using function GetColumnType() 
-                fieldsql = "SELECT " + field + " FROM table_load_" + loadid + " WHERE " + field + " IS NOT NULL";
+                //identify columns datatype using function GetColumnType() based on first 50 records
+                fieldsql = "SELECT TOP(50) " + field + " FROM table_load_" + loadid + " WHERE " + field + " IS NOT NULL";
                 using (var newTableCtx = new LoadedFiles())
                 {
                     var values = newTableCtx.Database.SqlQuery<string>(fieldsql).ToList();
@@ -153,7 +153,7 @@ namespace Data_Inspector.Models
                     dataType = GetColumnType(values);
                     if (dataType.ToString() == "System.String")
                     {
-                        sqlDataType = "varchar (max)";
+                        sqlDataType = "varchar";
                     }
                     else if (dataType.ToString() == "System.Boolean")
                     {
@@ -177,7 +177,7 @@ namespace Data_Inspector.Models
                     }
                     else
                     {
-                        sqlDataType = "nvarchar (max)";
+                        sqlDataType = "nvarchar";
                     }
 
                     sqlDataTypeList.Add(sqlDataType);
@@ -185,7 +185,7 @@ namespace Data_Inspector.Models
                 }             
                 
             }
-            // setting appropriate Data Types for each column
+            // setting appropriate Data Types and Size for each column
             for (int x=0; x<sqlDataTypeList.Count; x++)
             {
                 using (var newTableCtx = new LoadedFiles())
@@ -195,8 +195,18 @@ namespace Data_Inspector.Models
                     int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101), TRY_CONVERT(DATE, '1753-01-01', 102));");
                     }
 
-                    int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN "+fields[x]+" "+sqlDataTypeList[x]+";");
+                    if (sqlDataTypeList[x] == "varchar" || sqlDataTypeList[x] == "nvarchar")
+                    {
+                       string sql = "select max(len(" + fields[x] + ")) from table_load_" + loadid + ";";
+                       var size = newTableCtx.Database.SqlQuery<Int64>(sql).ToList();
+                       int alterDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + "(" + size[0] + ");");
+                    }
+                    else
+                    {
+                        int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + ";");
+                    }
                 }
+
             }
    
         }
