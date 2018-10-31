@@ -116,7 +116,7 @@ namespace Data_Inspector.Models
             return sql;
         }
 
-        public string GenerateInsertInToTableSql(string[] data, string loadid)
+        public string GenerateInsertInToTableSql(List<string> data, string loadid)
         {
             string sql;
 
@@ -167,10 +167,10 @@ namespace Data_Inspector.Models
                     {
                         sqlDataType = "bigint";
                     }
-                    else if (dataType.ToString() == "System.Double")
-                    {
-                        sqlDataType = "float (50)";
-                    }
+                    else if (dataType.ToString() == "System.Double") //later on is converting value back to nvarchar when consists character "," 
+                    {                                                //We will have to implement a tool for the user to then define if char"," represents separator for decimal places or if
+                        sqlDataType = "float(53)";                   //is used to separate for example thousands (1,000) or millions(1,000,000)            
+                    }                                                //as well have to develop func to handle size of float so far is fixed length(53)       
                     else if (dataType.ToString() == "System.DateTime")
                     {
                         sqlDataType = "datetime";
@@ -192,18 +192,28 @@ namespace Data_Inspector.Models
                 {   //unifying Date Format (yyyy-mm-dd) to be able to alter column and set as "datetime" data type. If column has invalid date it will be set as '1753-01-01' to pointed out wrong value and differentiate from not populated(NULL) - we must somehow catch this and reported 
                     if (sqlDataTypeList[x] == "datetime")
                     {
-                    int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101), TRY_CONVERT(DATE, '1753-01-01', 102));");
+                        int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101), TRY_CONVERT(DATE, '1753-01-01', 102));");
                     }
+                    else 
+                    {
+                        try
+                        {
+                            if (sqlDataTypeList[x] != "varchar" || sqlDataTypeList[x] != "nvarchar")
+                            {
+                                int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + ";");
+                            }
+                        }
+                        catch
+                        {
+                            if (sqlDataTypeList[x] == "float(53)")
+                            {
+                                sqlDataTypeList[x] = "nvarchar";
+                            }
+                            string sql = "select max(len(" + fields[x] + ")) from table_load_" + loadid + ";";
+                            var size = newTableCtx.Database.SqlQuery<Int64>(sql).ToList();
+                            int alterColumnsTypeSize = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + "(" + size[0] + ");");
 
-                    if (sqlDataTypeList[x] == "varchar" || sqlDataTypeList[x] == "nvarchar")
-                    {
-                       string sql = "select max(len(" + fields[x] + ")) from table_load_" + loadid + ";";
-                       var size = newTableCtx.Database.SqlQuery<Int64>(sql).ToList();
-                       int alterDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + "(" + size[0] + ");");
-                    }
-                    else
-                    {
-                        int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + ";");
+                        }
                     }
                 }
 

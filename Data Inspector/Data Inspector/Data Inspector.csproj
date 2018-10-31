@@ -239,6 +239,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MyLoadedFilesModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\MySplit.cs" />
     <Compile Include="Models\UsersListModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

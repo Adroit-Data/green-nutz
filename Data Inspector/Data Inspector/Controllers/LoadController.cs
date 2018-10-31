@@ -76,9 +76,9 @@ namespace Data_Inspector.Controllers
                             ctx.SaveChanges();
 
                             loadid = loadedfile.LoadedFileID.ToString();
-
+                       
                             string[] fields = source.Split(seperator);
-
+                            
                             string sql;
 
                             string sqlproofloadid = loadid.Replace('-', '_');
@@ -95,7 +95,79 @@ namespace Data_Inspector.Controllers
                             {
                                 //insert data in to new table
                                 source = streamReader.ReadLine();
-                                string[] values = source.Split(seperator);
+                                //if (source.Contains("\""))
+                                //{
+
+                                //    List<int> openSpeechMarks = new List<int>();
+                                //    List<int> closingSpeechMarks = new List<int>();
+                                //    List<int> lengthBetweenSpeechMarks = new List<int>();
+                                //    List<int> allSpeechMarksPositions = new List<int>();
+
+                                //    for (int i = source.IndexOf('"'); i > -1; i = source.IndexOf('"', i + 1)) // Looping only thru '"'using func IndexOf() Instead of looping through each character to see if it's the one you want
+                                //    {
+                                //        // for loop end when i=-1 ('"' not found)
+                                //        allSpeechMarksPositions.Add(i);
+
+                                //    }
+
+                                //    for (int i = 0; i <= allSpeechMarksPositions.Count()-1; i++)
+                                //    {
+                                //        if (i % 2 == 0)
+                                //        {
+
+                                //            openSpeechMarks.Add(allSpeechMarksPositions[i]);
+                                //        }
+                                //        else
+                                //        {
+                                //            closingSpeechMarks.Add(allSpeechMarksPositions[i]);
+                                //        }
+                                //    }
+
+                                //    for (int i = 0; i <= closingSpeechMarks.Count()-1; i++)
+                                //    {
+                                //        lengthBetweenSpeechMarks.Add(closingSpeechMarks[i] - openSpeechMarks[i]);
+                                //    }
+
+                                //    int firstOne = source.IndexOf("\"", 0);
+                                //    int end = source.IndexOf("\"", firstOne + 1);
+                                //    int length = end - firstOne;
+                                //    List<string> quoutedValues = new List<string>();
+
+                                //    for (int i = 0; i <= lengthBetweenSpeechMarks.Count()-1; i++)
+                                //    {
+                                //        quoutedValues.Add(source.Substring(openSpeechMarks[i], lengthBetweenSpeechMarks[i]));
+                                //    }
+
+                                //    List<string> tempQuoutedValues = new List<string>();
+                                //    foreach (string quoutedValue in quoutedValues)
+                                //    {
+                                //        if (quoutedValue.Contains('.') && quoutedValue.Contains(','))
+                                //        {
+                                //            tempQuoutedValues.Add(quoutedValue.Replace(",",""));
+                                //        }
+                                //        else
+                                //        {
+                                //            tempQuoutedValues.Add(quoutedValue.Replace(",", "-tempComma-"));
+                                //        }
+
+                                //    }
+
+                                //    for (int i = 0; i <= tempQuoutedValues.Count() - 1; i++)
+                                //    {
+                                //        source = source.Replace(quoutedValues[i], tempQuoutedValues[i]);
+                                //    }
+
+                                //    source = source.Replace("\"", "");
+                                //}
+
+                                MySplit split = new MySplit();
+                                List<string> values = split.mySplit(source,seperator);
+                                //List<string> values2 = new List<string>();
+                                //foreach (string value in values)
+                                //{
+                                    
+                                //    values2.Add(value.Replace("-tempComma-", ","));
+                                //}
 
                                 sql = LoadView.GenerateInsertInToTableSql(values, sqlproofloadid);
 
