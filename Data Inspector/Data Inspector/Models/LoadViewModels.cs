@@ -99,7 +99,7 @@ namespace Data_Inspector.Models
 
         }
 
-        public string GenerateCreateTableSql(string[] fields, string loadid)
+        public string GenerateCreateTableSql(List<string> fields, string loadid)
         {
             string sql;
 
@@ -107,8 +107,8 @@ namespace Data_Inspector.Models
 
             foreach (string item in fields)
             {
-                string field = item.Replace("\"", "");
-                sql = sql + " " + field + " nvarchar(max),";
+                //string field = item.Replace("\"", ""); commented out as this removes "" within "".The outer "" are now handled within func mySplit() in model MySplit.
+               sql = sql + " " + item + " nvarchar(max),";
             }
             sql = sql + ");";
 
@@ -133,7 +133,7 @@ namespace Data_Inspector.Models
             return sql;
         }
 
-        public void SetupColumnsDataTypes(string[] fields, string loadid)
+        public void SetupColumnsDataTypes(List<string> fields, string loadid)
         {
             string fieldsql;
             Type dataType;
@@ -169,8 +169,8 @@ namespace Data_Inspector.Models
                     }
                     else if (dataType.ToString() == "System.Double") //later on is converting value back to nvarchar when consists character "," 
                     {                                                //We will have to implement a tool for the user to then define if char"," represents separator for decimal places or if
-                        sqlDataType = "float(53)";                   //is used to separate for example thousands (1,000) or millions(1,000,000)            
-                    }                                                //as well have to develop func to handle size of float so far is fixed length(53)       
+                        sqlDataType = "float";                       //is used to separate for example thousands (1,000) or millions(1,000,000)            
+                    }   
                     else if (dataType.ToString() == "System.DateTime")
                     {
                         sqlDataType = "datetime";
@@ -192,10 +192,10 @@ namespace Data_Inspector.Models
                 {   //unifying Date Format (yyyy-mm-dd) to be able to alter column and set as "datetime" data type. If column has invalid date it will be set as '1753-01-01' to pointed out wrong value and differentiate from not populated(NULL) - we must somehow catch this and reported 
                     if (sqlDataTypeList[x] == "datetime")
                     {
-                        int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101), TRY_CONVERT(DATE, '1753-01-01', 102));");
-                        int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + ";");
+                            int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101));");
+                            int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + ";");
                     }
-                    else 
+                    else
                     {
                         try
                         {
@@ -206,7 +206,7 @@ namespace Data_Inspector.Models
                         }
                         catch
                         {
-                            if (sqlDataTypeList[x] == "float(53)")
+                            if (sqlDataTypeList[x] != "varchar" || sqlDataTypeList[x] != "nvarchar")
                             {
                                 sqlDataTypeList[x] = "nvarchar";
                             }
@@ -224,12 +224,13 @@ namespace Data_Inspector.Models
 
         enum dataType
         {
-            System_String = 0, // varchar
-            System_Boolean = 1, // bit
-            System_Int32 = 2, // int
-            System_Int64 = 3, // bigint
-            System_Double = 4, // float
-            System_DateTime = 5 // datetime
+            System_DateTime = 0, // datetime
+            System_String = 1, // varchar
+            System_Boolean = 2, // bit
+            System_Int32 = 3, // int
+            System_Int64 = 4, // bigint
+            System_Double = 5 // float
+            
             //above mappings have been done acordingly to "SQL Server Data Type Mappings"  https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/sql-server-data-type-mappings
 
         }
@@ -294,7 +295,7 @@ namespace Data_Inspector.Models
          
 
             //if typelevel = int32 check for bit only data & cast to bool
-            if (maxLevel == 1 && Convert.ToInt32(strMinValue) == 0 && Convert.ToInt32(strMaxValue) == 1)
+            if (maxLevel == 3 && Convert.ToInt32(strMinValue) == 0 && Convert.ToInt32(strMaxValue) == 1)
             {
                 T = Type.GetType("System.Boolean");
             }

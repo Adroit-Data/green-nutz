@@ -53,6 +53,7 @@ namespace Data_Inspector.Controllers
                         //Read File
                         using (var streamReader = System.IO.File.OpenText(path))
                         {
+                            MySplit split = new MySplit();
                             string source = streamReader.ReadLine();
 
                             //confirm filetype and detect seperator
@@ -77,7 +78,7 @@ namespace Data_Inspector.Controllers
 
                             loadid = loadedfile.LoadedFileID.ToString();
                        
-                            string[] fields = source.Split(seperator);
+                            List<string> fields = split.mySplit(source, seperator);
                             
                             string sql;
 
@@ -158,9 +159,7 @@ namespace Data_Inspector.Controllers
                                 //    }
 
                                 //    source = source.Replace("\"", "");
-                                //}
-
-                                MySplit split = new MySplit();
+                                //}                               
                                 List<string> values = split.mySplit(source,seperator);
                                 //List<string> values2 = new List<string>();
                                 //foreach (string value in values)
