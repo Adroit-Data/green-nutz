@@ -123,8 +123,8 @@ namespace Data_Inspector.Models
             sql = "INSERT INTO table_load_" + loadid + " VALUES (newid(),";
             foreach (string item in data)
             {
-                string row = item.Replace("\"", "");
-                sql = sql + "'" + row + "',";
+                //string row = item.Replace("\"", "");  commented out as this removes "" within "". The outer "" are now handled within func mySplit() in model MySplit.
+                sql = sql + "'" + item + "',";
             }
             sql = sql.TrimEnd(',');
             sql = sql + ");";

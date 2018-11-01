@@ -13,19 +13,34 @@ namespace Data_Inspector.Models
 
             while (source.Count() != 0)
             {
-
+                string quotChar;
                 if (source.StartsWith("\""))
                 {
-                    
-                    int end = source.IndexOf("\"" + separator);
+                    quotChar = "\"";
+                }
+                else if (source.StartsWith("'"))
+                {
+                    quotChar = "'";
+                }
+                else
+                {
+                    quotChar = null;
+                }
+
+                if (quotChar != null)
+                {
+                    quotChar += separator;
+                    int end = source.IndexOf(quotChar);
                     if (end < 0)
                     {
-                        values.Add(source.Substring(0));
+                        char lastQuot;
+                        char.TryParse(quotChar.TrimEnd(separator), out lastQuot);
+                        values.Add(source.Substring(1).TrimEnd(lastQuot));
                         source = "";
                     }
                     else
                     {
-                        values.Add(source.Substring(0, end));
+                        values.Add(source.Substring(1, end-1));
                         source = source.Substring(end + 2);
                     }
                         
