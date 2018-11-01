@@ -193,6 +193,7 @@ namespace Data_Inspector.Models
                     if (sqlDataTypeList[x] == "datetime")
                     {
                         int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101), TRY_CONVERT(DATE, '1753-01-01', 102));");
+                        int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + ";");
                     }
                     else 
                     {
