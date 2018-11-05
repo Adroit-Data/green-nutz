@@ -11,8 +11,8 @@ using Microsoft.AspNet.Identity;
 using System.Security.Claims;
 using LoadingBar;
 using System.Threading;
-using System.Windows.Forms;
-
+using System.Data.SqlClient;
+using System.Configuration;
 
 namespace Data_Inspector.Controllers
 {
@@ -79,42 +79,66 @@ namespace Data_Inspector.Controllers
                             ctx.SaveChanges();
 
                             loadid = loadedfile.LoadedFileID.ToString();
-                       
+
+                            Thread t = new Thread(new ThreadStart(new frmMain().StartForm));
+                            t.Start();
+                            Thread.Sleep(5000);
+
                             List<string> fields = split.mySplit(source, seperator);
-                            
+
                             string sql;
 
                             string sqlproofloadid = loadid.Replace('-', '_');
 
                             sql = LoadView.GenerateCreateTableSql(fields, sqlproofloadid);
 
-                            using (var newTableCtx = new LoadedFiles())
+                            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+                            var Conn = new SqlConnection(ConnStr);
+                            var CreateTable = new SqlCommand(sql,Conn);
+                            Conn.Open();
+                            CreateTable.ExecuteNonQuery();
+
+                            var tempDataTable = new DataTable();
+                            tempDataTable.Columns.Add(new DataColumn("DIRowID"));
+                            for (int i = 0; i < fields.Count; i++)
                             {
-                                int noOfTablesCreated = newTableCtx.Database.ExecuteSqlCommand(sql);
+                                tempDataTable.Columns.Add(new DataColumn());
                             }
-                            Thread t = new Thread(new ThreadStart(new frmMain().StartForm));
-                            t.Start();
-                            Thread.Sleep(5000);
 
+                            
                             while (!streamReader.EndOfStream)
-                                {
+                            {
+                                DataRow row = tempDataTable.NewRow();
+                                source = streamReader.ReadLine();
 
-                                    //insert data in to new table
-                                    source = streamReader.ReadLine();
+                                List<string> values = new List<string>();
+                                values.Add(Guid.NewGuid().ToString());
+                                values.AddRange(split.mySplit(source, seperator));
+                                row.ItemArray = values.ToArray();
+                                tempDataTable.Rows.Add(row);
 
-                                    List<string> values = split.mySplit(source, seperator);
+                                //sql = LoadView.GenerateInsertInToTableSql(values, sqlproofloadid);
 
+                                //ViewBag.Message = sql;
+                                //using (var newTableCtx = new LoadedFiles())
+                                //{
+                                //    int noOfRecordsInserted = newTableCtx.Database.ExecuteSqlCommand(sql);
+                                //}
+                            }
 
-                                    sql = LoadView.GenerateInsertInToTableSql(values, sqlproofloadid);
+                            streamReader.Close();
 
-                                    //ViewBag.Message = sql;
-                                    using (var newTableCtx = new LoadedFiles())
-                                    {
-                                        int noOfRecordsInserted = newTableCtx.Database.ExecuteSqlCommand(sql);
-                                    }
-                                }
+                            var bc = new SqlBulkCopy(Conn, SqlBulkCopyOptions.TableLock, null)
+                            {
+                                DestinationTableName = "table_load_" + sqlproofloadid,
+                                BatchSize = tempDataTable.Rows.Count
+                            };
 
-                                streamReader.Close();
+                            //Conn.Open();
+                            bc.WriteToServer(tempDataTable);
+                            Conn.Close();
+                            bc.Close();
+
                             t.Abort();
                             
                                 

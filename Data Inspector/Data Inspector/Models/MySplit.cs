@@ -16,7 +16,7 @@ namespace Data_Inspector.Models
         public List<string> mySplit(string source, char separator) {
 
             List<string> values = new List<string>();
-            
+
             while (source.Count() != 0)
             {
      

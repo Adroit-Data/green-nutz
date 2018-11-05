@@ -103,7 +103,7 @@ namespace Data_Inspector.Models
         {
             string sql;
 
-            sql = "CREATE TABLE table_load_" + loadid + " (DIRowID uniqueidentifier not null,";
+            sql = "CREATE TABLE table_load_" + loadid + " (DIRowID varchar(50) not null,";
 
             foreach (string item in fields)
             {
@@ -189,7 +189,9 @@ namespace Data_Inspector.Models
             for (int x=0; x<sqlDataTypeList.Count; x++)
             {
                 using (var newTableCtx = new LoadedFiles())
-                {   //unifying Date Format (yyyy-mm-dd) to be able to alter column and set as "datetime" data type. If column has invalid date it will be set as '1753-01-01' to pointed out wrong value and differentiate from not populated(NULL) - we must somehow catch this and reported 
+                {
+                    int alterRowIdDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN DIRowID uniqueidentifier NOT NULL");
+                    //unifying Date Format (yyyy-mm-dd) to be able to alter column and set as "datetime" data type. If column has invalid date it will be set as '1753-01-01' to pointed out wrong value and differentiate from not populated(NULL) - we must somehow catch this and reported 
                     if (sqlDataTypeList[x] == "datetime")
                     {
                             int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101));");

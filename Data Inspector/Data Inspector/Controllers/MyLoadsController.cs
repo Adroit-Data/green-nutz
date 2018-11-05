@@ -98,6 +98,7 @@ namespace Data_Inspector.Controllers
                 SqlConnection Conn = new SqlConnection(ConnStr);
 
                 SqlCommand cmd = new SqlCommand("SELECT * FROM [dbo].table_load_" + TableName + " where DIRowID='" + RowId.ToString() + "'", Conn);
+                
 
                 Conn.Open();
                 SqlDataReader dr = cmd.ExecuteReader();
