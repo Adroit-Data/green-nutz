@@ -9,6 +9,9 @@ using System.Text.RegularExpressions;
 using Data_Inspector.Models;
 using Microsoft.AspNet.Identity;
 using System.Security.Claims;
+using LoadingBar;
+using System.Threading;
+using System.Windows.Forms;
 
 
 namespace Data_Inspector.Controllers
@@ -49,7 +52,6 @@ namespace Data_Inspector.Controllers
                         file.SaveAs(path);
                         ModelState.Clear();
                         ViewBag.Message = "File uploaded successfully";
-
                         //Read File
                         using (var streamReader = System.IO.File.OpenText(path))
                         {
@@ -90,94 +92,34 @@ namespace Data_Inspector.Controllers
                             {
                                 int noOfTablesCreated = newTableCtx.Database.ExecuteSqlCommand(sql);
                             }
-
+                            Thread t = new Thread(new ThreadStart(new frmMain().StartForm));
+                            t.Start();
+                            Thread.Sleep(5000);
 
                             while (!streamReader.EndOfStream)
-                            {
-                                //insert data in to new table
-                                source = streamReader.ReadLine();
-                                //if (source.Contains("\""))
-                                //{
-
-                                //    List<int> openSpeechMarks = new List<int>();
-                                //    List<int> closingSpeechMarks = new List<int>();
-                                //    List<int> lengthBetweenSpeechMarks = new List<int>();
-                                //    List<int> allSpeechMarksPositions = new List<int>();
-
-                                //    for (int i = source.IndexOf('"'); i > -1; i = source.IndexOf('"', i + 1)) // Looping only thru '"'using func IndexOf() Instead of looping through each character to see if it's the one you want
-                                //    {
-                                //        // for loop end when i=-1 ('"' not found)
-                                //        allSpeechMarksPositions.Add(i);
-
-                                //    }
-
-                                //    for (int i = 0; i <= allSpeechMarksPositions.Count()-1; i++)
-                                //    {
-                                //        if (i % 2 == 0)
-                                //        {
-
-                                //            openSpeechMarks.Add(allSpeechMarksPositions[i]);
-                                //        }
-                                //        else
-                                //        {
-                                //            closingSpeechMarks.Add(allSpeechMarksPositions[i]);
-                                //        }
-                                //    }
-
-                                //    for (int i = 0; i <= closingSpeechMarks.Count()-1; i++)
-                                //    {
-                                //        lengthBetweenSpeechMarks.Add(closingSpeechMarks[i] - openSpeechMarks[i]);
-                                //    }
-
-                                //    int firstOne = source.IndexOf("\"", 0);
-                                //    int end = source.IndexOf("\"", firstOne + 1);
-                                //    int length = end - firstOne;
-                                //    List<string> quoutedValues = new List<string>();
-
-                                //    for (int i = 0; i <= lengthBetweenSpeechMarks.Count()-1; i++)
-                                //    {
-                                //        quoutedValues.Add(source.Substring(openSpeechMarks[i], lengthBetweenSpeechMarks[i]));
-                                //    }
-
-                                //    List<string> tempQuoutedValues = new List<string>();
-                                //    foreach (string quoutedValue in quoutedValues)
-                                //    {
-                                //        if (quoutedValue.Contains('.') && quoutedValue.Contains(','))
-                                //        {
-                                //            tempQuoutedValues.Add(quoutedValue.Replace(",",""));
-                                //        }
-                                //        else
-                                //        {
-                                //            tempQuoutedValues.Add(quoutedValue.Replace(",", "-tempComma-"));
-                                //        }
-
-                                //    }
-
-                                //    for (int i = 0; i <= tempQuoutedValues.Count() - 1; i++)
-                                //    {
-                                //        source = source.Replace(quoutedValues[i], tempQuoutedValues[i]);
-                                //    }
-
-                                //    source = source.Replace("\"", "");
-                                //}                               
-                                List<string> values = split.mySplit(source,seperator);
-                                //List<string> values2 = new List<string>();
-                                //foreach (string value in values)
-                                //{
-                                    
-                                //    values2.Add(value.Replace("-tempComma-", ","));
-                                //}
-
-                                sql = LoadView.GenerateInsertInToTableSql(values, sqlproofloadid);
-
-                                //ViewBag.Message = sql;
-                                using (var newTableCtx = new LoadedFiles())
                                 {
-                                     int noOfRecordsInserted = newTableCtx.Database.ExecuteSqlCommand(sql);
-                                }
-                            }
 
-                            streamReader.Close();
+                                    //insert data in to new table
+                                    source = streamReader.ReadLine();
+
+                                    List<string> values = split.mySplit(source, seperator);
+
+
+                                    sql = LoadView.GenerateInsertInToTableSql(values, sqlproofloadid);
+
+                                    //ViewBag.Message = sql;
+                                    using (var newTableCtx = new LoadedFiles())
+                                    {
+                                        int noOfRecordsInserted = newTableCtx.Database.ExecuteSqlCommand(sql);
+                                    }
+                                }
+
+                                streamReader.Close();
+                            t.Abort();
+                            
+                                
+                         
+                      
 
                             // delete the copied file
                             if (System.IO.File.Exists(path))
@@ -186,8 +128,8 @@ namespace Data_Inspector.Controllers
                             }
                             // identifying data types and altering table columns
                             LoadView.SetupColumnsDataTypes(fields, sqlproofloadid);
-                    
 
+                            
                             //return Loaded View passing the table id
                             return Redirect("MyLoads");
 

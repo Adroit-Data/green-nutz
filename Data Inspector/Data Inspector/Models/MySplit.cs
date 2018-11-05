@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Web;
+using System.Web.UI;
+using System.Windows.Forms;
+using LoadingBar;
 
 namespace Data_Inspector.Models
 {
     public class MySplit
     {
 
+        
         public List<string> mySplit(string source, char separator) {
-            List<string> values = new List<string>();
 
+            List<string> values = new List<string>();
+            
             while (source.Count() != 0)
             {
+     
                 string quotChar;
                 if (source.StartsWith("\""))
                 {
@@ -31,7 +38,7 @@ namespace Data_Inspector.Models
                 {
                     quotChar += separator;
                     int end = source.IndexOf(quotChar);
-                    if (end < 0)
+                    if (end < 0) // happening at the end of the string when separator doesn't exist because it is end of line e.g.("value" insted of "value",)
                     {
                         char lastQuot;
                         char.TryParse(quotChar.TrimEnd(separator), out lastQuot);
