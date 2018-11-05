@@ -80,10 +80,11 @@ namespace Data_Inspector.Controllers
 
                             loadid = loadedfile.LoadedFileID.ToString();
 
-                            Thread t = new Thread(new ThreadStart(new frmMain().StartForm));
-                            t.Start();
-                            Thread.Sleep(5000);
+                            Thread t = new Thread(new ThreadStart(new frmMain().StartForm)); // declaring new Thread to run Loading Window at this same time as actual Load process without interrupting it
+                            t.Start(); // run Thread 
+                            Thread.Sleep(1000); //1000 miliseconds = 1sec
 
+                            // Bulk Load 
                             List<string> fields = split.mySplit(source, seperator);
 
                             string sql;
@@ -91,7 +92,7 @@ namespace Data_Inspector.Controllers
                             string sqlproofloadid = loadid.Replace('-', '_');
 
                             sql = LoadView.GenerateCreateTableSql(fields, sqlproofloadid);
-
+                            
                             string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
                             var Conn = new SqlConnection(ConnStr);
                             var CreateTable = new SqlCommand(sql,Conn);
@@ -139,12 +140,6 @@ namespace Data_Inspector.Controllers
                             Conn.Close();
                             bc.Close();
 
-                            t.Abort();
-                            
-                                
-                         
-                      
-
                             // delete the copied file
                             if (System.IO.File.Exists(path))
                             {
@@ -153,7 +148,8 @@ namespace Data_Inspector.Controllers
                             // identifying data types and altering table columns
                             LoadView.SetupColumnsDataTypes(fields, sqlproofloadid);
 
-                            
+                            t.Abort(); //closing thread to shut down Loading Window
+
                             //return Loaded View passing the table id
                             return Redirect("MyLoads");
 
