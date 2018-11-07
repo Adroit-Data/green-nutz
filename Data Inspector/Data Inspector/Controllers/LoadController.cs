@@ -52,9 +52,13 @@ namespace Data_Inspector.Controllers
                         file.SaveAs(path);
                         ModelState.Clear();
                         ViewBag.Message = "File uploaded successfully";
+                        int lineCount = System.IO.File.ReadLines(path).Count();
+                        int perCent = 1;
+
                         //Read File
                         using (var streamReader = System.IO.File.OpenText(path))
                         {
+                            
                             MySplit split = new MySplit();
                             string source = streamReader.ReadLine();
 
@@ -117,6 +121,9 @@ namespace Data_Inspector.Controllers
                                 values.AddRange(split.mySplit(source, seperator));
                                 row.ItemArray = values.ToArray();
                                 tempDataTable.Rows.Add(row);
+
+                                int currentProgress = tempDataTable.Rows.Count;
+                                perCent = (currentProgress / lineCount) * 100;
 
                                 //sql = LoadView.GenerateInsertInToTableSql(values, sqlproofloadid);
 

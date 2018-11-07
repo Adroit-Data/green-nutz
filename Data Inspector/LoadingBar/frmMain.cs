@@ -13,13 +13,10 @@ namespace LoadingBar
 {
     public partial class frmMain : Form
     {
+        public int percent { get; set; }
         public frmMain()
         {
-            //Thread t = new Thread(new ThreadStart(StartForm));
-            //t.Start();
-            //Thread.Sleep(5000);
             InitializeComponent();
-           
         }
 
         public void StartForm()
