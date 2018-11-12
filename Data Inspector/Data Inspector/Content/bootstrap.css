@@ -2149,7 +2149,7 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
 }
 
 .form-check-input:disabled ~ .form-check-label {
-  color: #6c757d;
+  color: #fff;
 }
 
 .form-check-label {
@@ -2502,8 +2502,8 @@ fieldset:disabled a.btn {
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #007bff;
+  color: #007bff;
+  background-color: #fff;
   border-color: #007bff;
 }
 

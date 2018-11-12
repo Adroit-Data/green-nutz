@@ -1,4 +1,5 @@
 ﻿@model Data_Inspector.Models.LoadViewModel
+
 @{
     ViewBag.Title = "Load";
 }
@@ -9,135 +10,142 @@
     <p class="alert-info">@ViewBag.Message</p>
     <p class="alert-info">@ViewBag.DataDebug</p>
 </div>
-
+<div  ng-app="myApp" ng-controller="progressBarCtrl">
 @using (Html.BeginForm("Index", "Load", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
 {
-    
+
     @Html.ValidationSummary("", new { @class = "text-danger" })
     <div class="form-group">
         @Html.LabelFor(m => m.File, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.File, new { type = "file", @class = "form-control", id="filetoUpload", name="file" })
+            @Html.TextBoxFor(m => m.File, new { type = "file", @class = "form-control btn btn-primary", id = "filetoUpload", name = "file" })
         </div>
     </div>
+
     <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" id="btnSubmit" class="btn btn-default" value="Upload" />
+        <div class="col-md-offset-2 col-md-10" >
+            <input type="submit" id="btnSubmit" class="btn btn-primary" value="Upload" ng-click="toggle()"/>
         </div>
     </div>
-    <div class="progress">
-        <div class="progress-bar progress-striped active" style="width:80%">
-            80% uploading...
-        </div>
-
-    </div>
-
 }
+    <div ng-show="showProgressBar"><h4 style="color:black;">Loading {{progress()}}%</h4></div>
+    <div class="progress" ng-show="showProgressBar">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:{{progress()}}%">
+        </div>
+    </div>
+</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
 
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('progressBarCtrl', function ($scope) {
+        $scope.showProgressBar = false;
+        $scope.toggle = function () {
+            $scope.showProgressBar = !$scope.showProgressBar;
+        };
+        $scope.finish = 99;
+        $scope.progress = function () {
+            if ($scope.showProgressBar == true) {
+                for (var i = 0; i <= 100; i++) {
+                    var myVar = i;
+                };
+                return myVar;
+            };
+
+        };
+        
+
+        
+    });
+</script> 
 <script type="text/jscript">
-//get file size
-function GetFileSize(fileid) {
- try
- {
- var fileSize = 0;
- //for IE
- if ($.browser.msie)
- {
- //before making an object of ActiveXObject,
- //please make sure ActiveX is enabled in your IE browser
- var objFSO = new ActiveXObject("Scripting.FileSystemObject"); var filePath = $("#" + fileid)[0].value;
- var objFile = objFSO.getFile(filePath);
- var fileSize = objFile.size; //size in kb
- fileSize = fileSize / 1048576; //size in mb
- }
- //for FF, Safari, Opeara and Others
- else
- {
- fileSize = $("#" + fileid)[0].files[0].size //size in kb
- fileSize = fileSize / 1048576; //size in mb
- }
- return fileSize;
- }
- catch (e)
- {
- alert("Error is :" + e);
- }
-}
+    //get file size
+    function GetFileSize(fileid) {
+        try {
+            var fileSize = 0;
+            //for IE
+            if ($.browser.msie) {
+                //before making an object of ActiveXObject,
+                //please make sure ActiveX is enabled in your IE browser
+                var objFSO = new ActiveXObject("Scripting.FileSystemObject"); var filePath = $("#" + fileid)[0].value;
+                var objFile = objFSO.getFile(filePath);
+                var fileSize = objFile.size; //size in kb
+                fileSize = fileSize / 1048576; //size in mb
+            }
+                //for FF, Safari, Opeara and Others
+            else {
+                fileSize = $("#" + fileid)[0].files[0].size //size in kb
+                fileSize = fileSize / 1048576; //size in mb
+            }
+            return fileSize;
+        }
+        catch (e) {
+            alert("Error is :" + e);
+        }
+    }
 
-//get file path from client system
-function getNameFromPath(strFilepath)
-{
- var objRE = new RegExp(/([^\/\\]+)$/);
- var strName = objRE.exec(strFilepath);
+    //get file path from client system
+    function getNameFromPath(strFilepath) {
+        var objRE = new RegExp(/([^\/\\]+)$/);
+        var strName = objRE.exec(strFilepath);
 
- if (strName == null)
- {
- return null;
- }
- else
- {
- return strName[0];
- }
-}
+        if (strName == null) {
+            return null;
+        }
+        else {
+            return strName[0];
+        }
+    }
 
-$("#btnSubmit").live("click", function ()
-{
- if ($('#fileToUpload').val() == "")
- {
- $("#spanfile").html("Please upload file");
- return false;
- }
- else
- {
- return checkfile();
- }
-});
+    $("#btnSubmit").live("click", function () {
+        if ($('#fileToUpload').val() == "") {
+            $("#spanfile").html("Please upload file");
+            return false;
+        }
+        else {
+            return checkfile();
+        }
+    });
 
-function checkfile()
-{
- var file = getNameFromPath($("#fileToUpload").val());
- if (file != null)
- {
- var extension = file.substr((file.lastIndexOf('.') + 1));
- // alert(extension);
- switch (extension) {
- case 'jpg':
- case 'png':
- case 'gif':
- case 'pdf':
- flag = true;
- break;
- default:
- flag = false;
- }
- }
- if (flag == false)
- {
- $("#spanfile").text("You can upload only jpg,png,gif,pdf extension file");
- return false;
- }
- else
- {
- var size = GetFileSize('fileToUpload');
- if (size > 3)
- {
- $("#spanfile").text("You can upload file up to 3 MB");
- return false;
- }
- else
- {
- $("#spanfile").text("");
- }
- }
-}
+    function checkfile() {
+        var file = getNameFromPath($("#fileToUpload").val());
+        if (file != null) {
+            var extension = file.substr((file.lastIndexOf('.') + 1));
+            // alert(extension);
+            switch (extension) {
+                case 'jpg':
+                case 'png':
+                case 'gif':
+                case 'pdf':
+                    flag = true;
+                    break;
+                default:
+                    flag = false;
+            }
+        }
+        if (flag == false) {
+            $("#spanfile").text("You can upload only jpg,png,gif,pdf extension file");
+            return false;
+        }
+        else {
+            var size = GetFileSize('fileToUpload');
+            if (size > 3) {
+                $("#spanfile").text("You can upload file up to 3 MB");
+                return false;
+            }
+            else {
+                $("#spanfile").text("");
+            }
+        }
+    }
 
-$(function ()
-{
- $("#fileToUpload").change(function () {
- checkfile();});
-});
+    $(function () {
+        $("#fileToUpload").change(function () {
+            checkfile();
+        });
+    });
 </script>

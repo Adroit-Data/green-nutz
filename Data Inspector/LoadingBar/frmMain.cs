@@ -21,6 +21,7 @@ namespace LoadingBar
 
         public void StartForm()
         {
+
             Application.Run(new frmSplashScreen());
         }
     }

@@ -4,6 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Core.Objects.DataClasses;
 using System.Linq;
 using System.Data;
+using System.Configuration;
+using System.Data.SqlClient;
+using Microsoft.AspNet.Identity;
+using System.Security.Claims;
+using LoadingBar;
+using System.Threading;
 
 namespace Data_Inspector.Models
 {
@@ -13,7 +19,12 @@ namespace Data_Inspector.Models
         [Required]
         [Display(Name = "File")]
         public string File { get; set; }
+        public int perCent { get; set; }
 
+        public int setPerCent(int value)
+        {
+            return this.perCent + value;
+        }
         public string DetectFileType(string headerrow)
         {
             bool csv;
@@ -307,7 +318,109 @@ namespace Data_Inspector.Models
 
             return T;
         }
+        public void loadFile(string path, string fileName, string userID)
+        {
+            int lineCount = System.IO.File.ReadLines(path).Count();
+            using (var streamReader = System.IO.File.OpenText(path))
+            {
+                
+                MySplit split = new MySplit();
+                string source = streamReader.ReadLine();
+              
+                //confirm filetype and detect seperator
+                LoadViewModel LoadView = new LoadViewModel();
+                string fileType = LoadView.DetectFileType(source);
+                char seperator = LoadView.DetectDelimeter(source);
 
+                //is it a valid structure??
+                //if (fileType == "notvalid" || seperator == '?')
+                //{
+                //    ViewBag.Message = "Unsupported File Format.";
+                //    return View();
+                //}
+
+                //add to table details table, return table id.
+                string loadid;
+
+                LoadedFiles ctx = new LoadedFiles();
+                LoadedFile loadedfile = new LoadedFile { LoadedFileID = Guid.NewGuid(), FileName = fileName, FileType = fileType, FileImportDate = DateTime.Now, UserID = userID };
+                ctx.DBLoadedFiles.Add(loadedfile);
+                ctx.SaveChanges();
+
+                loadid = loadedfile.LoadedFileID.ToString();
+
+                Thread t = new Thread(new ThreadStart(new frmMain().StartForm)); // declaring new Thread to run Loading Window at this same time as actual Load process without interrupting it
+
+                t.Start(); // run Thread 
+                Thread.Sleep(1000); //1000 miliseconds = 1sec
+
+                //Bulk Load
+                List<string> fields = split.mySplit(source, seperator);
+
+                string sql;
+
+                string sqlproofloadid = loadid.Replace('-', '_');
+
+                sql = LoadView.GenerateCreateTableSql(fields, sqlproofloadid);
+
+                string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+                var Conn = new SqlConnection(ConnStr);
+                var CreateTable = new SqlCommand(sql, Conn);
+                Conn.Open();
+                CreateTable.ExecuteNonQuery();
+
+                var tempDataTable = new DataTable();
+                tempDataTable.Columns.Add(new DataColumn("DIRowID"));
+                for (int i = 0; i < fields.Count; i++)
+                {
+                    tempDataTable.Columns.Add(new DataColumn());
+                }
+
+
+                while (!streamReader.EndOfStream)
+                {
+                    DataRow row = tempDataTable.NewRow();
+                    source = streamReader.ReadLine();
+
+                    List<string> values = new List<string>();
+                    values.Add(Guid.NewGuid().ToString());
+                    values.AddRange(split.mySplit(source, seperator));
+                    row.ItemArray = values.ToArray();
+                    tempDataTable.Rows.Add(row);
+
+                    int currentProgress = tempDataTable.Rows.Count;
+                    perCent = (currentProgress / lineCount) * 100;
+
+                    //sql = LoadView.GenerateInsertInToTableSql(values, sqlproofloadid);
+
+                    //ViewBag.Message = sql;
+                    //using (var newTableCtx = new LoadedFiles())
+                    //{
+                    //    int noOfRecordsInserted = newTableCtx.Database.ExecuteSqlCommand(sql);
+                    //}
+                }
+
+                streamReader.Close();
+
+                var bc = new SqlBulkCopy(Conn, SqlBulkCopyOptions.TableLock, null)
+                {
+                    DestinationTableName = "table_load_" + sqlproofloadid,
+                    BatchSize = tempDataTable.Rows.Count
+                };
+
+                //Conn.Open();
+                bc.WriteToServer(tempDataTable);
+                Conn.Close();
+                bc.Close();
+
+                // identifying data types and altering table columns
+                LoadView.SetupColumnsDataTypes(fields, sqlproofloadid);
+
+                t.Abort(); //closing thread to shut down Loading Window
+            }
+
+             
+        }
     }
 
 
