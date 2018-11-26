@@ -164,7 +164,6 @@ C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Micro
 C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.dll
 C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.pdb
-C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.csprojResolveAssemblyReference.cache
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\ApplicationInsights.config
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\csc.exe
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
@@ -249,3 +248,4 @@ C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Mi
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.csprojResolveAssemblyReference.cache
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.dll
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.pdb
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.csprojResolveAssemblyReference.cache

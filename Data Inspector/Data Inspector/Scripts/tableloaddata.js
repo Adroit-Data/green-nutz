@@ -1,11 +1,7 @@
-﻿var TableLoadApp = angular.module('TableLoadApp', [])
+﻿var TableLoadApp = angular.module('TableLoadApp', ['ui.bootstrap'])
 
 TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http ,TableLoadService) {
-
-    //$scope.init = function (tableid) {
-    //    $scope.tableid = tableid;
-    // }
-    //$scope.tableid = '8BE8750A-431C-440A-A067-B4371364DC31';
+    
     $scope.tableid = tableid;
 
     getTableLoadData($scope.tableid);
@@ -15,10 +11,54 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
             .then(function (tblload) {
                 $scope.tableload = tblload;
                 $scope.tableload.selected = {};
-                buildheaders();
+                buildheaders();                
                 console.log($scope.tableload);
+
+                //Pagination
+                //$scope.viewby = 10;
+                $scope.totalItems = $scope.tableload.data.length;
+                //$scope.currentPage = 1;
+                //$scope.itemsPerPage = $scope.viewby;
+                //$scope.maxSize = 5; //Number of pager buttons to show
+
+                //$scope.setPage = function (pageNo) {
+                //    $scope.currentPage = pageNo;
+                //};
+
+                //$scope.pageChanged = function () {
+                //    console.log('Page changed to: ' + $scope.currentPage);
+                //};
+
+                //$scope.setItemsPerPage = function (num) {
+                //    $scope.itemsPerPage = num;
+                //    $scope.currentPage = 1; //reset to first page
+                //}
+                //Pagination END
+
+
             });
     }
+     
+    //Pagination
+    $scope.viewby = 50;
+    //$scope.totalItems = $scope.tableload.data.length;
+    $scope.currentPage = 1;
+    $scope.itemsPerPage = $scope.viewby;
+    $scope.maxSize = 5; //Number of pager buttons to show
+
+    $scope.setPage = function (pageNo) {
+        $scope.currentPage = pageNo;
+    };
+
+    $scope.pageChanged = function () {
+        console.log('Page changed to: ' + $scope.currentPage);
+    };
+
+    $scope.setItemsPerPage = function (num) {
+        $scope.itemsPerPage = num;
+        $scope.currentPage = 1; //reset to first page
+    }
+    //Pagination END
 
     // gets the template to ng-include for a table row / item
     $scope.getTemplate = function (r) {
@@ -82,12 +122,6 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
     $scope.reset = function () {
         $scope.tableload.selected = {};
     };
-
-    $scope.reload = function() {
-        location.reload();
-    };
-
-    //SORT DATA
         
     function buildheaders() {
         var x;
@@ -100,18 +134,6 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
         }
         $scope.headers = built;
     };
-
-    $scope.sortColumn = false;
-
-    $scope.reverseSort = false;
-
-    $scope.sortData = function (columnIndex) {
-        $scope.reverseSort = ($scope.sortColumn == $scope.headers[columnIndex]) ? !$scope.reverseSort : false;
-
-        $scope.sortColumn = $scope.headers[columnIndex];
-    }
-
-
 
 });
 
