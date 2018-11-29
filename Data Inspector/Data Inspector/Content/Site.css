@@ -1,12 +1,34 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    margin:0px;
+    width:100%;
 }
 
-/* Set padding to keep content from hitting the edges */
-.body-content {
+ /*Set padding to keep content from hitting the edges*/ 
+/*.body-content {
     padding-left: 15px;
     padding-right: 15px;
+    margin:0px;
+    width:100%;
+
+}*/
+/*.body.container {
+margin:0px;
+width:100%;
+}*/
+
+
+@media (min-width: 1200px) {
+   .container {
+     margin-left:0px;
+     margin-right:0px;
+     max-width: 100%;
+    }
+    
+}
+.btnSpace {
+    min-width: 120px;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -22,3 +44,24 @@ select,
 textarea {
     max-width: 280px;
 }
+
+ .loading {
+        position: absolute;
+        left: 48%;
+        top: 48%;
+        display: block;
+        padding: 5px;
+        background-color: #0026ff;
+        color: #ffffff;
+        border: 1px solid;
+        margin: 0 auto;
+    }
+ .fieldinput{
+     height:40px;
+     width:200px;
+     margin-left:3px;
+ }
+.btn {
+    border: 1px solid #212529;
+}
+

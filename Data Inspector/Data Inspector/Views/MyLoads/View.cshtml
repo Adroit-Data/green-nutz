@@ -18,55 +18,81 @@
 <h2>View</h2>
 
 <div ng-app="TableLoadApp" class="container">
-    <input type="text" placeholder="Search Data" ng-model="searchData" />
+    
     <br />
     <div ng-controller="TableLoadController">
-        <table class="table table-striped table-condensed table-hover">
-            <tr>
-                <th ng-repeat="header in headers">
-                    {{headers[$index]}} <a ng-click="sortData($index)"><i class="fas fa-sort"></i></a>
-                </th>              
-                <th>
-                    <button ng-click="reload()">Unsort</button>
-                </th>
-            </tr>
-            <tr ng-repeat="r in tableload.data | orderBy : sortColumn : reverseSort | filter : searchData" ng-include="getTemplate(r)">
-            </tr>            
-        </table>
-        <script type="text/ng-template" id="display">
-            @foreach (DataColumn col in Model.Columns)
-            {
-                string jsCol = "{{r." + col.ColumnName + "}}";
-                if (col.ColumnName != "DIRowID")
-                {                    
-                    <td>@jsCol</td>
+        <button ng-click="findData()" class="btn btn-light" >Search</button>
+        <select class="btn btn-light" ng-model="Column" ng-options="x for x in dropDownList"/>
+        <input class="btn btn-light" type="text" placeholder="Value" ng-model="Value" />
+        <span ng-show="Isloading" class="loading">Loading...</span>
+        <div infinitescroll="Nextpage()" style="height:600px; overflow-y:auto">
+            
+            <table class="table table-striped table-condensed table-hover">
+                <tr class="sticky-top">
+                    <th ng-repeat="header in headers">
+                        {{headers[$index]}} <a ng-click="sortData($index)"><i class="fas fa-sort"></i></a>
+                    </th>
+                    <th>
+                        <button ng-click="reload()">Unsort</button>
+                    </th>
+                </tr>
+                @*<tr ng-repeat="row in Rafalrows track by $index | orderBy : sortColumn : reverseSort">
+                        <td ng-repeat="rd in Rafalrows[$index]">{{rd}}</td>
+                    </tr>
+                </table>*@
+
+                <tr ng-repeat="r in tableload.data | orderBy : sortColumn : reverseSort | filter : searchData" ng-include="getTemplate(r) "></tr>
+            </table>
+            </div>
+            <script type="text/ng-template" id="display">
+
+                @foreach (DataColumn col in Model.Columns)
+                {
+                    string jsCol = "{{r." + col.ColumnName + "}}";
+                    if (col.ColumnName != "DIRowID")
+                    {
+                        <td>@jsCol</td>
+                    }
+                    else
+                    {
+                        <td style="display: none">@jsCol</td>
+                    }
                 }
-                else
-                {                   
-                    <td style="display: none">@jsCol</td>
-                }
-            }
-            <td>
-                <button ng-click="editData(r)">Edit</button>
-            </td>
-        </script>
-        <script type="text/ng-template" id="edit">
-            @foreach (DataColumn col in Model.Columns)
+                <td>
+                    <div class="btnSpace">
+                        <button ng-click="editData(r)">Edit</button>
+                    </div>
+</td>
+            </script>
+            <script type="text/ng-template" id="edit">
+                @foreach (DataColumn col in Model.Columns)
             {
                 if (col.ColumnName != "DIRowID")
                 {
-                    <td><input type="text" ng-model="tableload.selected.@col.ColumnName" /></td>
+                        <td><input type="text" ng-model="tableload.selected.@col.ColumnName" /></td>
+                    }
                 }
-            }
-            <td>
-                <button ng-click="saveData($index,r,tableload.selected)">Save</button>
-                <button ng-click="reset()">Cancel</button>
-            </td>
-        </script>
-    </div>
+                <td>
+                    <div class="btnSpace">
+                    <button ng-click="saveData($index,r,tableload.selected)">Save</button>
+                    <button ng-click="reset()">Cancel</button>
+                    </div>
+                </td>
+            </script>
+        </div>
 </div>
-
-
-
-
-
+<style type="text/css">
+    .loading {
+        position: absolute;
+        left: 48%;
+        top: 48%;
+        display: block;
+        padding: 5px;
+        background-color: #007bff;
+        color: #ffffff;
+        border: 1px solid;
+        margin: 0 auto;
+        font-size:xx-large;
+    }
+    </style>
+    

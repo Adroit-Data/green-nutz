@@ -21,11 +21,11 @@ namespace Data_Inspector.Controllers
     {
         // GET: MyLoads
         public ActionResult Index()
-        {            
+        {
 
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
-                
+
 
                 if (User.IsInRole("Admin"))
                 {
@@ -36,9 +36,9 @@ namespace Data_Inspector.Controllers
                     return View(myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()));
                 }
 
-                
+
             }
-            
+
         }
 
         // GET: MyLoads/NoAuth
@@ -55,7 +55,7 @@ namespace Data_Inspector.Controllers
             //Check Data belongs to user.
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
             {
-                
+
                 int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
 
                 if (User.IsInRole("Admin") || myUserLoads > 0)
@@ -77,13 +77,14 @@ namespace Data_Inspector.Controllers
                     }
                     return View(dt);
                 }
-               
-                
+
+
 
                 return RedirectToAction("NoAuth", "MyLoads");
 
             }
         }
+
 
         public ActionResult Edit(string TableName, string RowId)
         {
@@ -257,15 +258,15 @@ namespace Data_Inspector.Controllers
         public ContentResult GetTableLoadData(Guid id)
         {
 
-                    string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
-                    SqlConnection Conn = new SqlConnection(ConnStr);
-                    SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_GetTableLoadData]", Conn);
-                    SQLProcedure.SelectCommand.Parameters.AddWithValue("@Table", id.ToString().Replace('-', '_'));
-                    SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
-                    DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
-                    Conn.Open();
-                    SQLProcedure.Fill(dt);
-                    Conn.Close();
+            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+            SqlConnection Conn = new SqlConnection(ConnStr);
+            SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_GetTableLoadData]", Conn);
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@Table", id.ToString().Replace('-', '_'));
+            SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+            DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+            Conn.Open();
+            SQLProcedure.Fill(dt);
+            Conn.Close();
 
             var list = JsonConvert.SerializeObject(dt, Formatting.None, new JsonSerializerSettings()
             {
@@ -275,6 +276,56 @@ namespace Data_Inspector.Controllers
             return Content(list);
 
         }
+
+        public ContentResult GetTableLoadDataScroll(Guid id, string numOfRecords)
+        {
+
+            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+            SqlConnection Conn = new SqlConnection(ConnStr);
+            SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_GetTableLoadDataScroll]", Conn);
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@Table", id.ToString().Replace('-', '_'));
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@numOfRecords", numOfRecords);
+            SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+            DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+            Conn.Open();
+            SQLProcedure.Fill(dt);
+            Conn.Close();
+
+            var list = JsonConvert.SerializeObject(dt, Formatting.None, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            });
+
+            return Content(list);
+
+        }
+        
+        public ContentResult DISearch(Guid id, string Column, string Value)
+        {
+
+            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+            SqlConnection Conn = new SqlConnection(ConnStr);
+            SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_DISearch]", Conn);
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@Table", id.ToString().Replace('-', '_'));
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@Column", Column);
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@Value", "'"+Value+"'");
+            SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+            DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+            Conn.Open();
+            SQLProcedure.Fill(dt);
+            Conn.Close();
+
+            var list = JsonConvert.SerializeObject(dt, Formatting.None, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            });
+
+            return Content(list);
+        }
+
+
+
+
 
         public ContentResult GetTableLoadHeaders(Guid id)
         {
@@ -293,11 +344,12 @@ namespace Data_Inspector.Controllers
             {
                 ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             });
-
             return Content(list);
 
         }
-
-
+            
+            
     }
+
 }
+

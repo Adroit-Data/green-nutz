@@ -1,24 +1,68 @@
 ﻿var TableLoadApp = angular.module('TableLoadApp', [])
 
-TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http ,TableLoadService) {
+TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http, TableLoadService, FindData) {
 
     //$scope.init = function (tableid) {
     //    $scope.tableid = tableid;
     // }
     //$scope.tableid = '8BE8750A-431C-440A-A067-B4371364DC31';
     $scope.tableid = tableid;
+    $scope.Column = 'Search By';
+    $scope.Value = '';
+    $scope.displayFirstXRecords = 25;
 
-    getTableLoadData($scope.tableid);
+    getTableLoadData($scope.tableid, $scope.displayFirstXRecords);
 
-    function getTableLoadData(tableid) {
-        TableLoadService.getTableLoadData(tableid)
+    function getTableLoadData(tableid, numOfRecords) {
+        $scope.Isloading = true;
+        TableLoadService.getTableLoadData(tableid, numOfRecords)
             .then(function (tblload) {
                 $scope.tableload = tblload;
                 $scope.tableload.selected = {};
                 buildheaders();
+                buildDropDownList();
+                $scope.Isloading = false;
+                //builddata();
                 console.log($scope.tableload);
+                //console.log($scope.Rafalrows);
             });
-    }
+        
+    };
+
+    function getFindTableDataF(tableid, Column, Value) {
+        FindData.getTableLoadDataF(tableid, Column, Value)
+            .then (function (tblloada) {
+                $scope.Isloading = false;
+                if (tblloada.data[0] == '' || tblloada.data[0] == null)
+                {
+                    alert('There are no results for provided Search Criteria')
+                }
+                else
+                {
+                    $scope.Isloading = true;
+                    $scope.tableload = tblloada;
+                    $scope.tableload.selected = {};
+                    buildheaders();
+                    buildDropDownList();
+                    $scope.Isloading = false;
+                }
+            });
+
+    };
+  
+
+    $scope.findData = function () {
+        if ($scope.tableid == '' || $scope.Column == 'Search By' || $scope.Value == '')
+        {
+            alert('Please provide values for both "Search By" and "Value" field')
+            getTableLoadData($scope.tableid, $scope.displayFirstXRecords);
+        }
+        else
+        {
+            $scope.displayFirstXRecords = 25;
+            getFindTableDataF($scope.tableid, $scope.Column, $scope.Value)
+        }
+    };
 
     // gets the template to ng-include for a table row / item
     $scope.getTemplate = function (r) {
@@ -93,12 +137,54 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
         var x;
         var head = $scope.tableload.data[0];
         var built = [];
+        var dropDown = [];
         for (x in head) {
             if (x != "DIRowID") {
                 built.push(x);
             }            
         }
         $scope.headers = built;
+        dropDown = built;
+        //dropDown.push('Search By');
+        $scope.dropDownList = dropDown;
+
+    };
+
+    function buildDropDownList() {
+        var x;
+        var head = $scope.tableload.data[0];
+        var dropDown = [];
+        dropDown.push('Search By');
+        for (x in head) {
+            if (x != "DIRowID") {
+                dropDown.push(x);
+            }
+        }
+        $scope.dropDownList = dropDown;
+
+    };
+
+    function builddata() {
+        var x;
+        //var data = $scope.tableload.data[1];
+        var singleRow = [];
+        var singleRowData = [];
+        var allRows = [];
+        for (var x = 0 ; x <= 3 ; x++) {
+
+            for (var i = x; i <= x; i++) {
+                angular.forEach($scope.tableload.data[i], function (value, key) {
+                    if (key != "DIRowID") {
+                        this.push(value);
+                    }
+                }, singleRow);
+            };
+            allRows.push(singleRow)
+            singleRow = [];
+
+        };
+        $scope.Rafalrows = allRows;
+
     };
 
     $scope.sortColumn = false;
@@ -111,18 +197,58 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http 
         $scope.sortColumn = $scope.headers[columnIndex];
     }
 
+    $scope.Nextpage = function () {
 
+        if ($scope.displayFirstXRecords < $scope.displayFirstXRecords+1) {
+
+            $scope.displayFirstXRecords += 25;
+            //$scope.totalpage = $scope.currentpage + 1;
+            getTableLoadData($scope.tableid, $scope.displayFirstXRecords)
+            
+        }
+    };
 
 });
+
+TableLoadApp.directive('infinitescroll', function () {
+    //debugger;
+    return {
+       
+
+        restrict: 'A',
+
+        link: function (scope, element, attrs) {
+
+            element.bind('scroll', function () {
+
+                if (((element[0].scrollTop) + element[0].offsetHeight) == element[0].scrollHeight) {
+                 
+                    //element[0].scrollTop -= element[0].scrollTop
+                    element[0].scrollTop = element[0].scrollHeight - element[0].offsetHeight;
+                    element[0].scrollHeight += element[0].scrollTop;
+                   
+                    //alert('"scrolled"=' + element[0].scrollTop + ' "offsetHeight="' + element[0].offsetHeight + ' "scrollHeight="' + element[0].scrollHeight)
+                    scope.$apply(attrs.infinitescroll);
+                    
+
+                }
+                //alert('"scrolled"=' + element[0].scrollTop + ' "offsetHeight="' + element[0].offsetHeight + ' "scrollHeight="' + element[0].scrollHeight)
+            })   
+        }
+    }
+
+})
 
 
 TableLoadApp.factory('TableLoadService', ['$http', function ($http) {
 
+     
+
     var TableLoadService = {};
 
-    TableLoadService.getTableLoadData = function (id) {       
+    TableLoadService.getTableLoadData = function (id, numOfRecords) {
 
-        var geturl = '/MyLoads/GetTableLoadData/' + id;
+        var geturl = '/MyLoads/GetTableLoadDataScroll/' + id + '?numOfRecords=' + numOfRecords;
 
         return $http.get(geturl);
 
@@ -131,6 +257,26 @@ TableLoadApp.factory('TableLoadService', ['$http', function ($http) {
     return TableLoadService;
 
 }]);
+
+TableLoadApp.factory('FindData', ['$http', function ($http) {
+
+
+
+    var FindData = {};
+
+    FindData.getTableLoadDataF = function (id, Column, Value) {
+
+        var geturl = '/MyLoads/DISearch/' + id + '?Column=' + Column + '&Value=' + Value;
+
+        return $http.get(geturl);
+
+    };
+
+    return FindData;
+
+}]);
+
+
 
 
 

@@ -329,6 +329,7 @@
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.js.map" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -347,6 +348,7 @@
     <Content Include="Models\UsersListModel.edmx.diagram">
       <DependentUpon>UsersListModel.edmx</DependentUpon>
     </Content>
+    <Content Include="Scripts\bootstrap.min.js.map" />
     <Content Include="Scripts\brands.js" />
     <Content Include="Scripts\brands.min.js" />
     <Content Include="Scripts\errors.json" />
@@ -362,8 +364,6 @@
     <Content Include="Scripts\angular-cookies.min.js.map" />
     <Content Include="Scripts\angular-aria.min.js.map" />
     <Content Include="Scripts\angular-animate.min.js.map" />
-    <Content Include="Scripts\bootstrap.js.map" />
-    <Content Include="Scripts\bootstrap.min.js.map" />
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap.min.css.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -1119,6 +1119,7 @@
     <Content Include="Scripts\regular.min.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\scrollLoad.js" />
     <Content Include="Scripts\sitemap.xml" />
     <Content Include="Scripts\solid.js" />
     <Content Include="Scripts\solid.min.js" />

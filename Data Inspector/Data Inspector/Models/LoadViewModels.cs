@@ -119,8 +119,9 @@ namespace Data_Inspector.Models
             foreach (string item in fields)
             {
                 //string field = item.Replace("\"", ""); commented out as this removes "" within "".The outer "" are now handled within func mySplit() in model MySplit.
-               sql = sql + " " + item + " nvarchar(max),";
+               sql = sql + " [" + item + "] nvarchar(max),"; // add square brackets to prevent SQL key words from interrupting assigning datatypes if they are part of the column name.
             }
+            sql = sql.TrimEnd(',');
             sql = sql + ");";
 
 
@@ -349,8 +350,8 @@ namespace Data_Inspector.Models
 
                 loadid = loadedfile.LoadedFileID.ToString();
 
-                Thread t = new Thread(new ThreadStart(new frmMain().StartForm)); // declaring new Thread to run Loading Window at this same time as actual Load process without interrupting it
 
+                Thread t = new Thread(new ThreadStart(new frmMain().StartForm)); // declaring new Thread to run Loading Window at this same time as actual Load process without interrupting it
                 t.Start(); // run Thread 
                 Thread.Sleep(1000); //1000 miliseconds = 1sec
 
