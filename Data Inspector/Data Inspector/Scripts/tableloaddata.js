@@ -10,12 +10,14 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
     $scope.Column = 'Search By';
     $scope.Value = '';
     $scope.displayFirstXRecords = 25;
+    $scope.sortByColumn = "nothing";
+    $scope.sortOrder = '';
 
-    getTableLoadData($scope.tableid, $scope.displayFirstXRecords);
+    getTableLoadData($scope.tableid, $scope.displayFirstXRecords, $scope.sortByColumn);
 
-    function getTableLoadData(tableid, numOfRecords) {
+    function getTableLoadData(tableid, numOfRecords, sortBy, sortOrder) {
         $scope.Isloading = true;
-        TableLoadService.getTableLoadData(tableid, numOfRecords)
+        TableLoadService.getTableLoadData(tableid, numOfRecords, sortBy, sortOrder)
             .then(function (tblload) {
                 $scope.tableload = tblload;
                 $scope.tableload.selected = {};
@@ -55,7 +57,7 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
         if ($scope.tableid == '' || $scope.Column == 'Search By' || $scope.Value == '')
         {
             alert('Please provide values for both "Search By" and "Value" field')
-            getTableLoadData($scope.tableid, $scope.displayFirstXRecords);
+            getTableLoadData($scope.tableid, $scope.displayFirstXRecords, $scope.sortByColumn, $scope.sortOrder);;
         }
         else
         {
@@ -120,7 +122,7 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
 
             $scope.tableload.data[idx] = angular.copy($scope.tableload.selected);
             $scope.reset();
-         
+            getTableLoadData($scope.tableid, $scope.displayFirstXRecords, $scope.sortByColumn, $scope.sortOrder);
     };
 
     $scope.reset = function () {
@@ -187,26 +189,51 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
 
     };
 
-    $scope.sortColumn = false;
+    //sortation code for font awsome
+    $scope.sortCol = false;
 
-    $scope.reverseSort = false;
+    $scope.revSort = false;
 
-    $scope.sortData = function (columnIndex) {
-        $scope.reverseSort = ($scope.sortColumn == $scope.headers[columnIndex]) ? !$scope.reverseSort : false;
+    $scope.sortData = function (columnIndex)
+    {
 
-        $scope.sortColumn = $scope.headers[columnIndex];
+        $scope.revSort = ($scope.sortCol == $scope.headers[columnIndex]) ? !$scope.revSort : false;
+        
+        if ($scope.revSort)
+        {
+            $scope.sortOrder = "Asc"
+        }
+        else
+        {
+            $scope.sortOrder = "Desc"
+        }
+
+        $scope.sortCol = $scope.headers[columnIndex];
+        $scope.sortByColumn = $scope.headers[columnIndex];
+        getTableLoadData($scope.tableid, $scope.displayFirstXRecords, $scope.sortByColumn, $scope.sortOrder);
     }
 
+    //co-works with directive('infinitescroll') to get next lot of data after scroll all the way down
     $scope.Nextpage = function () {
 
         if ($scope.displayFirstXRecords < $scope.displayFirstXRecords+1) {
 
             $scope.displayFirstXRecords += 25;
             //$scope.totalpage = $scope.currentpage + 1;
-            getTableLoadData($scope.tableid, $scope.displayFirstXRecords)
+            getTableLoadData($scope.tableid, $scope.displayFirstXRecords, $scope.sortByColumn, $scope.sortOrder)
             
         }
     };
+
+
+    //event handler to detect if 'Enter' has been pressed in search 'Value' field
+    document.getElementById("searchedValue").addEventListener('keydown', checkKeyPress);
+    function checkKeyPress(key) {
+        if (key.keyCode == "13") { // 13 is keyCode for Enter 
+           $scope.findData(); 
+        }
+
+    }
 
 });
 
@@ -246,9 +273,9 @@ TableLoadApp.factory('TableLoadService', ['$http', function ($http) {
 
     var TableLoadService = {};
 
-    TableLoadService.getTableLoadData = function (id, numOfRecords) {
+    TableLoadService.getTableLoadData = function (id, numOfRecords, sortBy, sortOrder) {
 
-        var geturl = '/MyLoads/GetTableLoadDataScroll/' + id + '?numOfRecords=' + numOfRecords;
+        var geturl = '/MyLoads/GetTableLoadDataScroll/' + id + '?numOfRecords=' + numOfRecords + '&sortBy=' + sortBy + '&sortOrder=' + sortOrder;
 
         return $http.get(geturl);
 

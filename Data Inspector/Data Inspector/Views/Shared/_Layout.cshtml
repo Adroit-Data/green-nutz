@@ -10,9 +10,9 @@
     @Scripts.Render("~/bundles/angular")
     
 </head>
-<body class="container body-content" style="padding-top: 0px">
+<body class="container-fluid body-content" style="padding-top: 0px">
     <div class="navbar" >
-        <div class="container" style="padding-left: 0px">
+        <div class="container-fluid" style="padding-left: 0px">
             <div class="navbar-header">
                 <p class="nav navbar-text">
                     @Html.ActionLink("Data Inspector", "Index", "Home" @*new { area = "" }, new { @class = "navbar-brand" }*@) |
@@ -30,7 +30,7 @@
         </div>
         
     </div>
-    <div class="container body-content">
+    <div class="container-fluid body-content">
         @RenderBody()
         <hr />
         <footer>
