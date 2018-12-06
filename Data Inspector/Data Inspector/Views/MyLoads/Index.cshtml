@@ -35,10 +35,21 @@
         <td>
             @Html.DisplayFor(modelItem => item.FileImportDate)
         </td>
-        <td>            
-            @Html.ActionLink("View", "View", new { id=item.LoadedFileID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.LoadedFileID })
+        <td>
+            @if (item.Progress == 100)
+            {
+                @Html.ActionLink("Analyse", "Analyse", new { id = item.LoadedFileID }) <span>|</span>
+   
+                @Html.ActionLink("View", "View", new { id = item.LoadedFileID }) <span>|</span>
+
+                @Html.ActionLink("Delete", "Delete", new { id = item.LoadedFileID })
+            } else {
+                <p>Still Processing!!!</p> 
+            }
         </td>
+        
+           
+        
     </tr>
 }
 

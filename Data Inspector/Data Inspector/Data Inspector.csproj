@@ -1123,6 +1123,7 @@
     <Content Include="Scripts\sitemap.xml" />
     <Content Include="Scripts\solid.js" />
     <Content Include="Scripts\solid.min.js" />
+    <Content Include="Scripts\tableloadchart.js" />
     <Content Include="Scripts\tableloaddata.js" />
     <Content Include="Scripts\v4-shims.js" />
     <Content Include="Scripts\v4-shims.min.js" />
@@ -1168,6 +1169,7 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Views\MyLoads\Analyse.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

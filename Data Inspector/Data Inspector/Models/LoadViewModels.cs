@@ -43,25 +43,26 @@ namespace Data_Inspector.Models
             {
                 csv = true;
                 // this is for csv ","
-               // seperator = "\",\"";
+                // seperator = "\",\"";
             }
             else if (qualifiercount == 0 && commacount > 0)
             {
                 csv = true;
                 // this is for csv ,
-               // seperator = ",";
+                // seperator = ",";
             }
             else
             {
                 csv = false;
                 // this is for csv ,
-               // seperator = ",";
+                // seperator = ",";
             }
 
             if (csv == true)
             {
                 filetype = "csv";
-            } else
+            }
+            else
             {
                 filetype = "notvalid";
             }
@@ -119,7 +120,7 @@ namespace Data_Inspector.Models
             foreach (string item in fields)
             {
                 //string field = item.Replace("\"", ""); commented out as this removes "" within "".The outer "" are now handled within func mySplit() in model MySplit.
-               sql = sql + " [" + item + "] nvarchar(max),"; // add square brackets to prevent SQL key words from interrupting assigning datatypes if they are part of the column name.
+                sql = sql + " [" + item + "] nvarchar(max),"; // add square brackets to prevent SQL key words from interrupting assigning datatypes if they are part of the column name.
             }
             sql = sql.TrimEnd(',');
             sql = sql + ");";
@@ -150,7 +151,7 @@ namespace Data_Inspector.Models
             string fieldsql;
             Type dataType;
             string sqlDataType;
-            List<string>sqlDataTypeList = new List<string>();
+            List<string> sqlDataTypeList = new List<string>();
 
             foreach (string item in fields)
             {
@@ -182,7 +183,7 @@ namespace Data_Inspector.Models
                     else if (dataType.ToString() == "System.Double") //later on is converting value back to nvarchar when consists character "," 
                     {                                                //We will have to implement a tool for the user to then define if char"," represents separator for decimal places or if
                         sqlDataType = "float";                       //is used to separate for example thousands (1,000) or millions(1,000,000)            
-                    }   
+                    }
                     else if (dataType.ToString() == "System.DateTime")
                     {
                         sqlDataType = "datetime";
@@ -194,11 +195,11 @@ namespace Data_Inspector.Models
 
                     sqlDataTypeList.Add(sqlDataType);
 
-                }             
-                
+                }
+
             }
             // setting appropriate Data Types and Size for each column
-            for (int x=0; x<sqlDataTypeList.Count; x++)
+            for (int x = 0; x < sqlDataTypeList.Count; x++)
             {
                 using (var newTableCtx = new LoadedFiles())
                 {
@@ -206,8 +207,8 @@ namespace Data_Inspector.Models
                     //unifying Date Format (yyyy-mm-dd) to be able to alter column and set as "datetime" data type. If column has invalid date it will be set as '1753-01-01' to pointed out wrong value and differentiate from not populated(NULL) - we must somehow catch this and reported 
                     if (sqlDataTypeList[x] == "datetime")
                     {
-                            int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101));");
-                            int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + ";");
+                        int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101));");
+                        int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + ";");
                     }
                     else
                     {
@@ -233,7 +234,7 @@ namespace Data_Inspector.Models
                 }
 
             }
-   
+
         }
 
         enum dataType
@@ -244,7 +245,7 @@ namespace Data_Inspector.Models
             System_Int32 = 3, // int
             System_Int64 = 4, // bigint
             System_Double = 5 // float
-            
+
             //above mappings have been done acordingly to "SQL Server Data Type Mappings"  https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/sql-server-data-type-mappings
 
         }
@@ -257,7 +258,7 @@ namespace Data_Inspector.Models
             Int64 bigintValue;
             double doubleValue;
             DateTime dateValue;
-            
+
 
             // Place checks higher in if-else statement to give higher priority to type.
 
@@ -306,7 +307,7 @@ namespace Data_Inspector.Models
             string enumCheck = ((dataType)maxLevel).ToString();
             T = Type.GetType(enumCheck.Replace('_', '.'));
 
-         
+
 
             //if typelevel = int32 check for bit only data & cast to bool
             if (maxLevel == 3 && Convert.ToInt32(strMinValue) == 0 && Convert.ToInt32(strMaxValue) == 1)
@@ -324,10 +325,10 @@ namespace Data_Inspector.Models
             int lineCount = System.IO.File.ReadLines(path).Count();
             using (var streamReader = System.IO.File.OpenText(path))
             {
-                
+
                 MySplit split = new MySplit();
                 string source = streamReader.ReadLine();
-              
+
                 //confirm filetype and detect seperator
                 LoadViewModel LoadView = new LoadViewModel();
                 string fileType = LoadView.DetectFileType(source);
@@ -420,10 +421,35 @@ namespace Data_Inspector.Models
                 t.Abort(); //closing thread to shut down Loading Window
             }
 
-             
+
         }
+
+        public string loadFileInfo(string path, string fileName, string userID)
+        {
+            int lineCount = System.IO.File.ReadLines(path).Count();
+            using (var streamReader = System.IO.File.OpenText(path))
+            {
+                string source = streamReader.ReadLine();
+                //confirm filetype and detect seperator
+                LoadViewModel LoadView = new LoadViewModel();
+                string fileType = LoadView.DetectFileType(source);
+                char seperator = LoadView.DetectDelimeter(source);
+
+                string loadid;
+
+                LoadedFiles ctx = new LoadedFiles();
+                LoadedFile loadedfile = new LoadedFile { LoadedFileID = Guid.NewGuid(), FileName = fileName, FileType = fileType, FileImportDate = DateTime.Now, UserID = userID };
+                ctx.DBLoadedFiles.Add(loadedfile);
+                ctx.SaveChanges();
+
+                loadid = loadedfile.LoadedFileID.ToString();
+
+                return loadid;
+
+            }
+
+        }
+
     }
-
-
 }
 

@@ -85,6 +85,43 @@ namespace Data_Inspector.Controllers
             }
         }
 
+        // GET: MyLoads/Analyse/5
+        public ActionResult Analyse(Guid id)
+        {
+            ViewBag.TableID = id;
+            //Check Data belongs to user.
+            using (MyLoadsConnection myLoads = new MyLoadsConnection())
+            {
+
+                int myUserLoads = myLoads.LoadedFiles.ToList().Where(x => x.UserID == User.Identity.GetUserId()).Where((x => x.LoadedFileID == id)).Count();
+
+                if (User.IsInRole("Admin") || myUserLoads > 0)
+                {
+                    string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+                    SqlConnection Conn = new SqlConnection(ConnStr);
+                    SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[Sp_GetTableLoadData]", Conn);
+                    SQLProcedure.SelectCommand.Parameters.AddWithValue("@Table", id.ToString().Replace('-', '_'));
+                    SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+                    DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+                    try
+                    {
+                        Conn.Open();
+                        SQLProcedure.Fill(dt);
+                    }
+                    finally
+                    {
+                        Conn.Close();
+                    }
+                    return View(dt);
+                }
+
+
+
+                return RedirectToAction("NoAuth", "MyLoads");
+
+            }
+        }
+
 
         public ActionResult Edit(string TableName, string RowId)
         {

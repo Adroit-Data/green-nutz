@@ -57,8 +57,13 @@ namespace Data_Inspector.Controllers
                         ViewBag.Message = "File uploaded successfully";
                         string userID = User.Identity.GetUserId();
 
-                        LoadViewModel load = new LoadViewModel();
-                        load.loadFile(path, fileName, userID);
+                        //Write to the LoadedFiles table (FileName, FileType, FileImportDate, UserID)
+                         LoadViewModel load = new LoadViewModel();
+                         load.loadFileInfo(path, fileName, userID);
+
+
+                        //LoadViewModel load = new LoadViewModel();
+                        //load.loadFile(path, fileName, userID);
 
 
                         //Read File

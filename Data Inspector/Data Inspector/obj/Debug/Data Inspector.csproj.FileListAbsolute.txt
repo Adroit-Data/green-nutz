@@ -251,3 +251,5 @@ C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\De
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.pdb
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\LoadingBar.exe
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\LoadingBar.pdb
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\LoadingBar.exe
+C:\Users\mhussey\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\LoadingBar.pdb

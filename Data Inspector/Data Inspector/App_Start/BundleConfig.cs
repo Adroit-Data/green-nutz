@@ -32,6 +32,7 @@ namespace Data_Inspector
             bundles.Add(new ScriptBundle("~/bundles/angular").Include(
                         "~/Scripts/angular.js",
                         "~/Scripts/scrollLoad.js"));
+
         }
     }
 }

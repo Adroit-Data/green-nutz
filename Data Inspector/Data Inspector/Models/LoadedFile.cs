@@ -19,5 +19,6 @@ namespace Data_Inspector.Models
         public string FileType { get; set; }
         public System.DateTime FileImportDate { get; set; }
         public string UserID { get; set; }
+        public Nullable<int> Progress { get; set; }
     }
 }
