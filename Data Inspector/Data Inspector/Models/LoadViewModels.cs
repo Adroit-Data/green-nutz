@@ -351,11 +351,6 @@ namespace Data_Inspector.Models
 
                 loadid = loadedfile.LoadedFileID.ToString();
 
-
-                Thread t = new Thread(new ThreadStart(new frmMain().StartForm)); // declaring new Thread to run Loading Window at this same time as actual Load process without interrupting it
-                t.Start(); // run Thread 
-                Thread.Sleep(1000); //1000 miliseconds = 1sec
-
                 //Bulk Load
                 List<string> fields = split.mySplit(source, seperator);
 
@@ -417,8 +412,7 @@ namespace Data_Inspector.Models
 
                 // identifying data types and altering table columns
                 LoadView.SetupColumnsDataTypes(fields, sqlproofloadid);
-
-                t.Abort(); //closing thread to shut down Loading Window
+                
             }
 
 

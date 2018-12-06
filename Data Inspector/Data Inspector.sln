@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data Inspector", "Data Inspector\Data Inspector.csproj", "{F9FC3D55-3C24-4DD4-AEB0-329391C06784}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadingBar", "LoadingBar\LoadingBar.csproj", "{4BA1A41E-57C9-4FAC-902D-74D6A46924CA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{F9FC3D55-3C24-4DD4-AEB0-329391C06784}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9FC3D55-3C24-4DD4-AEB0-329391C06784}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9FC3D55-3C24-4DD4-AEB0-329391C06784}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4BA1A41E-57C9-4FAC-902D-74D6A46924CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4BA1A41E-57C9-4FAC-902D-74D6A46924CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4BA1A41E-57C9-4FAC-902D-74D6A46924CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4BA1A41E-57C9-4FAC-902D-74D6A46924CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
