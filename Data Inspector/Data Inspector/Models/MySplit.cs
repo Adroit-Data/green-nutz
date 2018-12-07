@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Windows.Forms;
-using LoadingBar;
 
 namespace Data_Inspector.Models
 {

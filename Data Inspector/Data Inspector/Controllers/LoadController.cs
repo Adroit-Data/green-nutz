@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using Data_Inspector.Models;
 using Microsoft.AspNet.Identity;
 using System.Security.Claims;
-using LoadingBar;
 using System.Threading;
 using System.Data.SqlClient;
 using System.Configuration;
@@ -22,9 +21,7 @@ namespace Data_Inspector.Controllers
         // GET: Load
         public ActionResult Index()
         {
-            LoadViewModel progress = new LoadViewModel();
-            progress.perCent = 0;
-            return View(progress);
+            return View();
         }
 
         //
@@ -70,10 +67,10 @@ namespace Data_Inspector.Controllers
 
 
                         // delete the copied file
-                        if (System.IO.File.Exists(path))
-                            {
-                                System.IO.File.Delete(path);
-                            }
+                        //if (System.IO.File.Exists(path))
+                         //   {
+                             //   System.IO.File.Delete(path);
+                          //  }
                           
 
                             //return Loaded View passing the table id
@@ -86,6 +83,33 @@ namespace Data_Inspector.Controllers
             //Somethings gone wrong, return view
             return View();
         }
-            
+
+
+        // GET: Load/Process
+        public ActionResult Process(Guid id)
+        {            
+
+            LoadViewModel load = new LoadViewModel();
+
+            var fileName = load.filename(id);
+            var path = Path.Combine(Server.MapPath("~/Content/Upload"), fileName);
+
+            load.loadFile(path, fileName, id.ToString());
+
+            //delete the copied file
+            if (System.IO.File.Exists(path))
+               {
+               System.IO.File.Delete(path);
+              }
+
+            //run analysis
+           // load.runanalysis(id);
+
+            // once complete, update progress to 100%
+            load.progressupdate(id);
+
+            return View();
+        }
+
     }
 }

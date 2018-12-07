@@ -1170,6 +1170,8 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\MyLoads\Analyse.cshtml" />
+    <Content Include="Views\Load\Process.cshtml" />
+    <Content Include="Views\Load\NoAuth.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

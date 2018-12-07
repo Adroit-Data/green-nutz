@@ -15,6 +15,7 @@
           <Property Name="FileImportDate" Type="datetime" Nullable="false" />
           <Property Name="UserID" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Progress" Type="int" />
+          <Property Name="LineCount" Type="int" />
         </EntityType>
         <EntityContainer Name="ADI_DataInspectorModelStoreContainer">
           <EntitySet Name="LoadedFiles" EntityType="Self.LoadedFiles" Schema="dbo" store:Type="Tables" />
@@ -33,6 +34,7 @@
           <Property Name="FileImportDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="UserID" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Progress" Type="Int32" />
+          <Property Name="LineCount" Type="Int32" />
         </EntityType>
         <EntityContainer Name="MyLoadsConnection" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="LoadedFiles" EntityType="Self.LoadedFile" />
@@ -46,6 +48,7 @@
           <EntitySetMapping Name="LoadedFiles">
             <EntityTypeMapping TypeName="ADI_DataInspectorModel.LoadedFile">
               <MappingFragment StoreEntitySet="LoadedFiles">
+                <ScalarProperty Name="LineCount" ColumnName="LineCount" />
                 <ScalarProperty Name="Progress" ColumnName="Progress" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="LoadedFileID" ColumnName="LoadedFileID" />

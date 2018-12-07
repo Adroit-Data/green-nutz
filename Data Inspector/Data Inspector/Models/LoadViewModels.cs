@@ -4,12 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Core.Objects.DataClasses;
 using System.Linq;
 using System.Data;
+using System.IO;
 using System.Configuration;
 using System.Data.SqlClient;
 using Microsoft.AspNet.Identity;
 using System.Security.Claims;
-using LoadingBar;
 using System.Threading;
+
 
 namespace Data_Inspector.Models
 {
@@ -320,9 +321,9 @@ namespace Data_Inspector.Models
 
             return T;
         }
-        public void loadFile(string path, string fileName, string userID)
+        public void loadFile(string path, string fileName, string loadid)
         {
-            int lineCount = System.IO.File.ReadLines(path).Count();
+           // int lineCount = System.IO.File.ReadLines(path).Count();
             using (var streamReader = System.IO.File.OpenText(path))
             {
 
@@ -332,24 +333,7 @@ namespace Data_Inspector.Models
                 //confirm filetype and detect seperator
                 LoadViewModel LoadView = new LoadViewModel();
                 string fileType = LoadView.DetectFileType(source);
-                char seperator = LoadView.DetectDelimeter(source);
-
-                //is it a valid structure??
-                //if (fileType == "notvalid" || seperator == '?')
-                //{
-                //    ViewBag.Message = "Unsupported File Format.";
-                //    return View();
-                //}
-
-                //add to table details table, return table id.
-                string loadid;
-
-                LoadedFiles ctx = new LoadedFiles();
-                LoadedFile loadedfile = new LoadedFile { LoadedFileID = Guid.NewGuid(), FileName = fileName, FileType = fileType, FileImportDate = DateTime.Now, UserID = userID };
-                ctx.DBLoadedFiles.Add(loadedfile);
-                ctx.SaveChanges();
-
-                loadid = loadedfile.LoadedFileID.ToString();
+                char seperator = LoadView.DetectDelimeter(source);                           
 
                 //Bulk Load
                 List<string> fields = split.mySplit(source, seperator);
@@ -385,8 +369,8 @@ namespace Data_Inspector.Models
                     row.ItemArray = values.ToArray();
                     tempDataTable.Rows.Add(row);
 
-                    int currentProgress = tempDataTable.Rows.Count;
-                    perCent = (currentProgress / lineCount) * 100;
+                    //int currentProgress = tempDataTable.Rows.Count;
+                    //perCent = (currentProgress / lineCount) * 100;
 
                     //sql = LoadView.GenerateInsertInToTableSql(values, sqlproofloadid);
 
@@ -412,7 +396,9 @@ namespace Data_Inspector.Models
 
                 // identifying data types and altering table columns
                 LoadView.SetupColumnsDataTypes(fields, sqlproofloadid);
-                
+
+
+
             }
 
 
@@ -432,7 +418,7 @@ namespace Data_Inspector.Models
                 string loadid;
 
                 LoadedFiles ctx = new LoadedFiles();
-                LoadedFile loadedfile = new LoadedFile { LoadedFileID = Guid.NewGuid(), FileName = fileName, FileType = fileType, FileImportDate = DateTime.Now, UserID = userID };
+                LoadedFile loadedfile = new LoadedFile { LoadedFileID = Guid.NewGuid(), FileName = fileName, FileType = fileType, FileImportDate = DateTime.Now, UserID = userID, LineCount = lineCount };
                 ctx.DBLoadedFiles.Add(loadedfile);
                 ctx.SaveChanges();
 
@@ -444,6 +430,37 @@ namespace Data_Inspector.Models
 
         }
 
+        public string filename(Guid id)
+        {
+            using (var context = new LoadedFiles())
+            {
+                // Query for all blogs with names starting with B
+                var user = context.DBLoadedFiles.Find(id);
+
+                string file = user.FileName;
+
+                return file;
+
+            }
+
+        }
+
+        public void progressupdate(Guid id)
+        {
+            using (var context = new LoadedFiles())
+            {
+
+                var result = context.DBLoadedFiles.SingleOrDefault(b => b.LoadedFileID == id);
+                if (result != null)
+                {
+                    result.Progress = 100;
+                    context.SaveChanges();
+                }
+
+
+            }
+
+        }
     }
 }
 
