@@ -111,5 +111,18 @@ namespace Data_Inspector.Controllers
             return View();
         }
 
+        // GET: Load/All
+        public ActionResult All()
+        {
+
+            LoadViewModel load = new LoadViewModel();
+
+            //get list of unprocessed ids
+
+            //for each id run Load/Process/id
+
+            return View();
+        }
+
     }
 }
