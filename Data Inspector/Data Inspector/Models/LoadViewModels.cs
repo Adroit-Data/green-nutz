@@ -147,6 +147,32 @@ namespace Data_Inspector.Models
             return sql;
         }
 
+        public List<string> UpdateAnalysisTablePopuilationPerCent(List<string> headers, string loadid, int fileRowCount)
+        {
+
+            List<string> PopulationCountData = new List<string>();
+
+            string prep;
+            prep = "INSERT INTO [ADI_DataInspector].[dbo].Analysis ([AnalysisID], LoadedFileID, FieldName) Values ";
+            foreach (string item in headers)
+            {
+                prep += "(newid(), '" + loadid + "' ,'" +item+"'),";
+            }
+            prep = prep.TrimEnd(',');
+            PopulationCountData.Add(prep);
+
+            string update;
+            foreach (string item in headers)
+            {
+
+                update = "UPDATE [ADI_DataInspector].[dbo].Analysis SET [PopulationPercentage] = (SELECT cast(count([" + item + "]) * 100.0 /" + fileRowCount+"AS DECIMAL(5,2)) FROM [dbo].[table_load_" + loadid.ToString().Replace("-","_")+"] WHERE [" + item + "] != ' ' OR [" + item + "] != '' AND [" + item + "] IS NOT NULL), [PopulationCount] = (SELECT count([" + item + "]) FROM [dbo].[table_load_" + loadid.ToString().Replace("-", "_") + "] WHERE [" + item + "] != ' ' OR [" + item + "] != '' AND [" + item + "] IS NOT NULL) WHERE [LoadedFileID] = '" + loadid + "' AND [FieldName] = '" + item + "'";
+                PopulationCountData.Add(update);
+            }
+            
+
+            return PopulationCountData;
+        }
+
         public void SetupColumnsDataTypes(List<string> fields, string loadid)
         {
             string fieldsql;
@@ -159,7 +185,7 @@ namespace Data_Inspector.Models
                 string field = item.Replace("\"", "");
 
                 //identify columns datatype using function GetColumnType() based on first 50 records
-                fieldsql = "SELECT TOP(50) " + field + " FROM table_load_" + loadid + " WHERE " + field + " IS NOT NULL";
+                fieldsql = "SELECT TOP(50) " + field + " FROM table_load_" + loadid + " WHERE " + field + " IS NOT NULL AND " + field + " != ''";
                 using (var newTableCtx = new LoadedFiles())
                 {
                     var values = newTableCtx.Database.SqlQuery<string>(fieldsql).ToList();
@@ -169,10 +195,10 @@ namespace Data_Inspector.Models
                     {
                         sqlDataType = "varchar";
                     }
-                    else if (dataType.ToString() == "System.Boolean")
-                    {
-                        sqlDataType = "bit";
-                    }
+                    //else if (dataType.ToString() == "System.Boolean")
+                    //{
+                    //    sqlDataType = "bit";
+                    //}
                     else if (dataType.ToString() == "System.Int32")
                     {
                         sqlDataType = "int";
@@ -199,36 +225,51 @@ namespace Data_Inspector.Models
                 }
 
             }
-            // setting appropriate Data Types and Size for each column
+            // setting appropriate Data Types and Size for each column in database + Updates for table [dbo].Analysis with data counts that are used in analysis Chrts   
             for (int x = 0; x < sqlDataTypeList.Count; x++)
             {
                 using (var newTableCtx = new LoadedFiles())
                 {
+                    
                     int alterRowIdDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN DIRowID uniqueidentifier NOT NULL");
                     //unifying Date Format (yyyy-mm-dd) to be able to alter column and set as "datetime" data type. If column has invalid date it will be set as '1753-01-01' to pointed out wrong value and differentiate from not populated(NULL) - we must somehow catch this and reported 
                     if (sqlDataTypeList[x] == "datetime")
                     {
                         int unifyDates = newTableCtx.Database.ExecuteSqlCommand("Update table_load_" + loadid + " Set " + fields[x] + " = COALESCE( TRY_CONVERT(DATE, " + fields[x] + ", 103), TRY_CONVERT(DATE, " + fields[x] + ", 102), TRY_CONVERT(DATE, " + fields[x] + ", 101));");
                         int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + ";");
+                        int updateTblAnalysisFieldType = newTableCtx.Database.ExecuteSqlCommand("UPDATE [dbo].[Analysis] SET [Type] = '" + sqlDataTypeList[x] + "' WHERE [LoadedFileID] = '" + loadid.ToString().Replace("_", "-") + "' AND [FieldName] = '" + fields[x] + "'");
+                        //int updateTblAnalysisFieldType = newTableCtx.Database.ExecuteSqlCommand("UPDATE [dbo].[Analysis] SET [Type] = '" + sqlDataTypeList[x] + "', [MinValue] = (Select Min(" + fields[x] + ") from [dbo].table_load_" + loadid.ToString() + "), [MaxValue] = (Select Max(" + fields[x] + ") from [dbo].table_load_" + loadid.ToString() + ") WHERE [LoadedFileID] = '" + loadid.ToString().Replace("_", "-") + "' AND [FieldName] = '" + fields[x] + "'");
                     }
-                    else
+                    else // means sqlDataTypeList[x] is not a datetime
                     {
-                        try
-                        {
+                        try  //if sqlDataTypeList[x] is anything else but not varchar, nvarchar 
+                        {  
                             if (sqlDataTypeList[x] != "varchar" || sqlDataTypeList[x] != "nvarchar")
                             {
                                 int alterColumnsDataType = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + ";");
+                                int updateTblAnalysisFieldType = newTableCtx.Database.ExecuteSqlCommand("UPDATE [dbo].[Analysis] SET [Type] = '" + sqlDataTypeList[x] + "', [MinValue] = (Select Min("+fields[x]+") from [dbo].table_load_"+ loadid.ToString()+"), [MaxValue] = (Select Max(" + fields[x] + ") from [dbo].table_load_" + loadid.ToString() + "), [AvgValue] = (Select Avg(" + fields[x] + ") from [dbo].table_load_" + loadid.ToString() + ") WHERE [LoadedFileID] = '" + loadid.ToString().Replace("_", "-") + "' AND [FieldName] = '" + fields[x] + "'");
                             }
                         }
-                        catch
+                        catch // anything that failed in "Try" + type  varchar and nvarchar 
                         {
-                            if (sqlDataTypeList[x] != "varchar" || sqlDataTypeList[x] != "nvarchar")
+                            if (sqlDataTypeList[x] != "varchar" || sqlDataTypeList[x] != "nvarchar") // anything that failed in "Try" but is not "varchar" or "nvarchar" will be converted to nvarchar(e.g. at this moment numbers that have "," instead of "." to separate decimal points )
                             {
                                 sqlDataTypeList[x] = "nvarchar";
                             }
                             string sql = "select max(len(" + fields[x] + ")) from table_load_" + loadid + ";";
-                            var size = newTableCtx.Database.SqlQuery<Int64>(sql).ToList();
-                            int alterColumnsTypeSize = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + "(" + size[0] + ");");
+                            try
+                            {
+                                var size = newTableCtx.Database.SqlQuery<Int64>(sql).ToList();
+                                int alterColumnsTypeSize = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + "(" + size[0] + ");");
+                            }
+                            catch
+                            {
+                                var size = newTableCtx.Database.SqlQuery<Int32>(sql).ToList();
+                                int alterColumnsTypeSize = newTableCtx.Database.ExecuteSqlCommand("ALTER TABLE table_load_" + loadid + " ALTER COLUMN " + fields[x] + " " + sqlDataTypeList[x] + "(" + size[0] + ");");
+                            }
+                            
+                            
+                            int updateTblAnalysisFieldType = newTableCtx.Database.ExecuteSqlCommand("UPDATE [dbo].[Analysis] SET [Type] = '" + sqlDataTypeList[x] + "' WHERE [LoadedFileID] = '" + loadid.ToString().Replace("_", "-") + "' AND [FieldName] = '" + fields[x] + "'");
 
                         }
                     }
@@ -242,7 +283,7 @@ namespace Data_Inspector.Models
         {
             System_DateTime = 0, // datetime
             System_String = 1, // varchar
-            System_Boolean = 2, // bit
+            //System_Boolean = 2, // bit
             System_Int32 = 3, // int
             System_Int64 = 4, // bigint
             System_Double = 5 // float
@@ -254,7 +295,7 @@ namespace Data_Inspector.Models
         private dataType ParseString(string str)
         {
 
-            bool boolValue;
+            //bool boolValue;
             Int32 intValue;
             Int64 bigintValue;
             double doubleValue;
@@ -263,9 +304,9 @@ namespace Data_Inspector.Models
 
             // Place checks higher in if-else statement to give higher priority to type.
 
-            if (bool.TryParse(str, out boolValue))
-                return dataType.System_Boolean;
-            else if (Int32.TryParse(str, out intValue))
+            //if (bool.TryParse(str, out boolValue))
+            //    return dataType.System_Boolean;
+            if (Int32.TryParse(str, out intValue))
                 return dataType.System_Int32;
             else if (Int64.TryParse(str, out bigintValue))
                 return dataType.System_Int64;
@@ -311,10 +352,10 @@ namespace Data_Inspector.Models
 
 
             //if typelevel = int32 check for bit only data & cast to bool
-            if (maxLevel == 3 && Convert.ToInt32(strMinValue) == 0 && Convert.ToInt32(strMaxValue) == 1)
-            {
-                T = Type.GetType("System.Boolean");
-            }
+            //if (maxLevel == 3 && Convert.ToInt32(strMinValue) == 0 && Convert.ToInt32(strMaxValue) == 1)
+            //{
+            //    T = Type.GetType("System.Boolean");
+            //}
 
             if (maxLevel != 5) colSize = -1;
 
@@ -323,12 +364,14 @@ namespace Data_Inspector.Models
         }
         public void loadFile(string path, string fileName, string loadid)
         {
-           // int lineCount = System.IO.File.ReadLines(path).Count();
+            List<string> headers = null;
+            int lineCount = System.IO.File.ReadLines(path).Count()-1;
             using (var streamReader = System.IO.File.OpenText(path))
             {
 
                 MySplit split = new MySplit();
                 string source = streamReader.ReadLine();
+
 
                 //confirm filetype and detect seperator
                 LoadViewModel LoadView = new LoadViewModel();
@@ -338,17 +381,33 @@ namespace Data_Inspector.Models
                 //Bulk Load
                 List<string> fields = split.mySplit(source, seperator);
 
+                if (headers == null)
+                {
+                    headers = fields;
+                }
+
                 string sql;
+                string sql2;
+
+               
+
 
                 string sqlproofloadid = loadid.Replace('-', '_');
 
                 sql = LoadView.GenerateCreateTableSql(fields, sqlproofloadid);
+                sql2 = UpdateAnalysisTablePopuilationPerCent(headers, loadid, lineCount)[0];
 
                 string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
                 var Conn = new SqlConnection(ConnStr);
+
                 var CreateTable = new SqlCommand(sql, Conn);
+                var analysisUpdate = new SqlCommand(sql2, Conn);
+                
+
                 Conn.Open();
                 CreateTable.ExecuteNonQuery();
+                analysisUpdate.ExecuteNonQuery();
+
 
                 var tempDataTable = new DataTable();
                 tempDataTable.Columns.Add(new DataColumn("DIRowID"));
@@ -389,10 +448,20 @@ namespace Data_Inspector.Models
                     BatchSize = tempDataTable.Rows.Count
                 };
 
+
                 //Conn.Open();
                 bc.WriteToServer(tempDataTable);
-                Conn.Close();
                 bc.Close();
+
+                for (int i = 1; i <= UpdateAnalysisTablePopuilationPerCent(headers, loadid, lineCount).Count()-1; i++)
+                {
+                    sql2 = UpdateAnalysisTablePopuilationPerCent(headers, loadid, lineCount)[i];
+                    var analysisUpdate2 = new SqlCommand(sql2, Conn);
+                    analysisUpdate2.ExecuteNonQuery();
+
+                }
+                Conn.Close();
+               
 
                 // identifying data types and altering table columns
                 LoadView.SetupColumnsDataTypes(fields, sqlproofloadid);

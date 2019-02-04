@@ -133,8 +133,8 @@
         }
         else {
             var size = GetFileSize('fileToUpload');
-            if (size > 3) {
-                $("#spanfile").text("You can upload file up to 3 MB");
+            if (size > 50) {
+                $("#spanfile").text("You can upload file up to 50 MB");
                 return false;
             }
             else {

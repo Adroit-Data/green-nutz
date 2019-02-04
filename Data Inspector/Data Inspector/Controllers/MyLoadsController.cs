@@ -13,7 +13,9 @@ using Microsoft.AspNet.Identity.Owin;
 using System.Data.Common;
 using Data_Inspector.ViewModels;
 using Newtonsoft.Json;
-
+using Newtonsoft.Json.Linq;
+using System.Web.Services;
+using System.Windows.Forms;
 
 namespace Data_Inspector.Controllers
 {
@@ -175,7 +177,7 @@ namespace Data_Inspector.Controllers
 
         // POST: MyLoads/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(System.Web.Mvc.FormCollection collection)
         {
             try
             {
@@ -212,7 +214,7 @@ namespace Data_Inspector.Controllers
         }
         // POST: MyLoads/Delete/5
         [HttpPost]
-        public ActionResult Delete(Guid id, FormCollection collection)
+        public ActionResult Delete(Guid id, System.Web.Mvc.FormCollection collection)
         {
 
             using (MyLoadsConnection myLoads = new MyLoadsConnection())
@@ -232,6 +234,8 @@ namespace Data_Inspector.Controllers
                         tableName = loadedfile.LoadedFileID.ToString();
                         myLoads.Database.ExecuteSqlCommand("Drop Table [dbo].table_load_" + tableName.Replace("-", "_"));
                         myLoads.SaveChanges();
+                        //myLoads.Database.ExecuteSqlCommand("Delete From [dbo].Analysis WHERE [LoadedFileID] = " + id );
+                        //myLoads.SaveChanges();
 
                         return RedirectToAction("Index");
                     }
@@ -257,6 +261,7 @@ namespace Data_Inspector.Controllers
             //var RowId = Request["RowId"];
             //var ColumnName = Request["ColumnName"];
             //var ColumnNewValue = Request["ColumnNewValue"];
+            
 
 
 
@@ -277,16 +282,34 @@ namespace Data_Inspector.Controllers
                 string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
                 using (SqlConnection Conn = new SqlConnection(ConnStr))
                 {
-                    Conn.Open();
 
-                    using (SqlCommand cmd = new SqlCommand("update [dbo].table_load_" + TableName.ToString().Replace("-", "_") + " set " + ColumnName + " = '"+ColumnNewValue+"' where DIRowID = '" + RowId.ToString() + "'", Conn))
+                    using (SqlCommand cmd = new SqlCommand("[dbo].[Sp_updateRecord]", Conn))
                     {
-
-                        int rows = cmd.ExecuteNonQuery();
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@TableName", SqlDbType.VarChar).Value = TableName.ToString().Replace('-', '_');
+                        cmd.Parameters.Add("@RowId", SqlDbType.VarChar).Value = "'" + RowId.ToString() + "'";
+                        cmd.Parameters.Add("@ColumnName", SqlDbType.VarChar).Value = "["+ColumnName+"]";
+                        cmd.Parameters.Add("@ColumnNewValue", SqlDbType.VarChar).Value = ColumnNewValue;
+                        Conn.Open();
+                        try
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("New Value Have Wrong Data Type", "Error Detected in Input",
+                                 MessageBoxButtons.OK,
+                                 MessageBoxIcon.Information,
+                                 MessageBoxDefaultButton.Button1,
+                                 MessageBoxOptions.DefaultDesktopOnly);
                         
+                        }
+                        Conn.Close();
+
                     }
                 }
             }
+            
 
             return true;
         }
@@ -342,7 +365,118 @@ namespace Data_Inspector.Controllers
             return Content(list);
 
         }
+       
+        public ContentResult GetTablePopulationData(Guid id)
+        {
         
+            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+            SqlConnection Conn = new SqlConnection(ConnStr);
+            SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[sp_tablePopulationData]", Conn);
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@fileID", "'"+id.ToString()+"'");
+            SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+            DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+            Conn.Open();
+            SQLProcedure.Fill(dt);
+            Conn.Close();
+
+            var list = JsonConvert.SerializeObject(dt, Formatting.Indented, new JsonSerializerSettings());
+
+            return Content(list);
+
+        }
+
+        public ContentResult GetTableMinMaxAvgValues(Guid id)
+        {
+
+            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+            SqlConnection Conn = new SqlConnection(ConnStr);
+            SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[sp_tableMinMaxAvgValues]", Conn);
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@fileID", "'" + id.ToString() + "'");
+            SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+            DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+            Conn.Open();
+            SQLProcedure.Fill(dt);
+            Conn.Close();
+
+            var list = JsonConvert.SerializeObject(dt, Formatting.Indented, new JsonSerializerSettings());
+
+            return Content(list);
+
+        }
+
+        public ContentResult GetTableRecordsCount(Guid id)
+        {
+
+            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+            SqlConnection Conn = new SqlConnection(ConnStr);
+            SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[sp_tableRecordsCount]", Conn);
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@fileID", "'" + id.ToString() + "'");
+            SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+            DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+            Conn.Open();
+            SQLProcedure.Fill(dt);
+            Conn.Close();
+
+            var list = JsonConvert.SerializeObject(dt, Formatting.Indented, new JsonSerializerSettings());
+
+            return Content(list);
+
+        }
+
+
+        public ContentResult GetDateTypeFieldsData(Guid id)
+        {
+
+            string finalDateTypeFieldslist = "[";
+            string ConnStr = ConfigurationManager.ConnectionStrings["LoadedFiles"].ConnectionString;
+            SqlConnection Conn = new SqlConnection(ConnStr);
+            SqlDataAdapter SQLProcedure = new SqlDataAdapter("[dbo].[sp_getDateTypeFieldsNames]", Conn);
+            SQLProcedure.SelectCommand.Parameters.AddWithValue("@fileID", "'" + id.ToString() + "'");
+            SQLProcedure.SelectCommand.CommandType = CommandType.StoredProcedure;
+            DataTable dt = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+            DataTable dt2 = new DataTable(id.ToString().Replace('-', '_'));//have to pass id as parameter to be able to get table name in the view other wise is just passing table data without actual table name.
+            dt2.Columns.Add(new DataColumn("ColumnName"));
+
+            Conn.Open();
+            SQLProcedure.Fill(dt);
+            Conn.Close();
+           // string[] result = new string[1];
+            List<string> result = new List<string>();
+            int numOfRows = dt.Rows.Count;
+
+            if (numOfRows != 0)
+            {
+
+                for (int i = 0; i < numOfRows; i++)
+                {
+                    DataRow dr = dt.Rows[i];
+                    result.Add(dr.ItemArray[0].ToString());
+                }
+
+                for (int i = 0; i <= result.Count - 1; i++)
+                {
+                    dt2.Clear();
+                    SqlDataAdapter SQLProcedure2 = new SqlDataAdapter("[dbo].[sp_getDateTypeFieldsNamesData]", Conn);
+                    SQLProcedure2.SelectCommand.Parameters.AddWithValue("@fileID", id.ToString().Replace("-", "_"));
+                    SQLProcedure2.SelectCommand.Parameters.AddWithValue("@columnName", result[i].ToString());
+                    SQLProcedure2.SelectCommand.CommandType = CommandType.StoredProcedure;
+                    Conn.Open();
+                    SQLProcedure2.Fill(dt2);
+                    Conn.Close();
+                    string DateTypeFieldslist = JsonConvert.SerializeObject(dt2, Formatting.Indented, new JsonSerializerSettings());
+                    finalDateTypeFieldslist += DateTypeFieldslist.Replace("null", "\"" + result[i] + "\"").Replace("[", "").Replace("]", "");
+                    finalDateTypeFieldslist += ", ";
+                }
+
+                finalDateTypeFieldslist = finalDateTypeFieldslist.Remove(finalDateTypeFieldslist.Length - 2, 2);
+            }
+            else
+            { }
+
+
+            return Content(finalDateTypeFieldslist += "]");
+
+        }
         public ContentResult DISearch(Guid id, string Column, string Value)
         {
 
@@ -365,9 +499,6 @@ namespace Data_Inspector.Controllers
 
             return Content(list);
         }
-
-
-
 
 
         public ContentResult GetTableLoadHeaders(Guid id)

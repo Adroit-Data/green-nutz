@@ -1,6 +1,6 @@
 ﻿var TableLoadApp = angular.module('TableLoadApp', [])
 
-TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http, TableLoadService, FindData) {
+TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http, TableLoadService, FindData, UpdateCheck) {
 
     //$scope.init = function (tableid) {
     //    $scope.tableid = tableid;
@@ -12,6 +12,7 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
     $scope.displayFirstXRecords = 25;
     $scope.sortByColumn = "nothing";
     $scope.sortOrder = '';
+    $scope.updateCheck = {};
 
     getTableLoadData($scope.tableid, $scope.displayFirstXRecords, $scope.sortByColumn);
 
@@ -27,9 +28,33 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
                 //builddata();
                 console.log($scope.tableload);
                 //console.log($scope.Rafalrows);
+
+ 
             });
         
     };
+
+    function doFieldUpdateCheck(id, Column, RowId) {
+
+        UpdateCheck.doFieldUpdateCheck(id, Column, RowId)
+        .then(function (checkResult) {
+
+
+            if ($scope.updateCheck.length == 0) {
+                $scope.updateCheck = checkResult;
+            }
+            else if ($scope.updateCheck == checkResult) {
+                alert('update failed');
+                $scope.updateCheck = {};
+
+            }
+            else {
+                $scope.updateCheck = {};
+            }
+
+        });
+    };
+
 
     function getFindTableDataF(tableid, Column, Value) {
         FindData.getTableLoadDataF(tableid, Column, Value)
@@ -71,10 +96,11 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
         if (r.DIRowID === $scope.tableload.selected.DIRowID) return 'edit';
          return 'display';
     };
-
+    $scope.updateCheck;
     // changes the template from display to edit and copies the existing values over to the form
     $scope.editData = function (r) {
         $scope.tableload.selected = angular.copy(r);
+        $scope.updateCheck = $scope.tableload.selected;
     };
 
     //idx is the row number, r is the row data (original data), selected is the updated value data (changed data values)
@@ -95,8 +121,12 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
 
                 $scope.value = selected[x];
 
+               // UpdateCheck($scope.tableid, x, $scope.rowid);
                 // don't try to update the row id or anything else in r that is undefined object type
                 if (typeof $scope.value != 'undefined' && x != 'DIRowID') {
+
+                    
+
                     (function (r) {
                         $http({
                             method: 'POST',
@@ -109,6 +139,7 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
                     },
                     function (response) { // optional
                         // failed
+                        console.log("not saved data");
                     });
                     })();
                 }
@@ -118,9 +149,14 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
                     getTableLoadData($scope.tableid);                    
                 };
 
+               // doFieldUpdateCheck($scope.tableid, x, $scope.rowid);
+
             }
 
             $scope.tableload.data[idx] = angular.copy($scope.tableload.selected);
+            //console.log("scope :" + $scope.tableload.data[idx]);
+            //console.log("scope check :" + $scope.updateCheck);
+
             $scope.reset();
             getTableLoadData($scope.tableid, $scope.displayFirstXRecords, $scope.sortByColumn, $scope.sortOrder);
     };
@@ -168,7 +204,6 @@ TableLoadApp.controller('TableLoadController', function ($scope, tableid, $http,
 
     function builddata() {
         var x;
-        //var data = $scope.tableload.data[1];
         var singleRow = [];
         var singleRowData = [];
         var allRows = [];
@@ -300,6 +335,23 @@ TableLoadApp.factory('FindData', ['$http', function ($http) {
     };
 
     return FindData;
+
+}]);
+
+TableLoadApp.factory('UpdateCheck', ['$http', function ($http) {
+
+
+
+    var UpdateCheck = {};
+
+    UpdateCheck = function (id, Column, RowId) {
+
+        var geturl = '/MyLoads/UpdateCheck/' + id + '?Column=' + Column + '&RowId=' + RowId;
+
+        return $http.get(geturl);
+
+    };
+    return UpdateCheck;
 
 }]);
 

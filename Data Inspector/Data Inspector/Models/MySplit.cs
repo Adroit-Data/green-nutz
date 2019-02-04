@@ -12,7 +12,7 @@ namespace Data_Inspector.Models
     {
 
         
-        public List<string> mySplit(string source, char separator) {
+        public List<string> mySplit(string source, char separator) { // this function replaces empty "" fields with NULL values so that later on during Altering table and assigning int data type for the column, empty spaces will not result in being populated with "0" only with Nulls 
 
             List<string> values = new List<string>();
 
@@ -41,12 +41,26 @@ namespace Data_Inspector.Models
                     {
                         char lastQuot;
                         char.TryParse(quotChar.TrimEnd(separator), out lastQuot);
-                        values.Add(source.Substring(1).TrimEnd(lastQuot));
+                        if (source.Substring(1).TrimEnd(lastQuot).Count() != 0)
+                        {
+                            values.Add(source.Substring(1).TrimEnd(lastQuot));
+                        }
+                        else
+                        {
+                            values.Add(null);
+                        }
                         source = "";
                     }
                     else
                     {
-                        values.Add(source.Substring(1, end-1));
+                        if (source.Substring(1, end - 1).Count() != 0)
+                        {
+                            values.Add(source.Substring(1, end - 1));
+                        }
+                        else
+                        {
+                            values.Add(null);
+                        }
                         source = source.Substring(end + 2);
                     }
                         
@@ -56,12 +70,26 @@ namespace Data_Inspector.Models
                     int end = source.IndexOf(separator);
                     if (end < 0)
                     {
-                        values.Add(source.Substring(0));
+                        if (source.Substring(0).Count() != 0)
+                        {
+                            values.Add(source.Substring(0));
+                        }
+                        else
+                        {
+                            values.Add(null);
+                        }
                         source = "";
                     }
                     else
                     {
-                        values.Add(source.Substring(0, end));
+                        if (source.Substring(0, end).Count() != 0)
+                        {
+                            values.Add(source.Substring(0, end));
+                        }
+                        else
+                        {
+                            values.Add(null);
+                        }
                         source = source.Substring(end + 1);
                     }
                 }

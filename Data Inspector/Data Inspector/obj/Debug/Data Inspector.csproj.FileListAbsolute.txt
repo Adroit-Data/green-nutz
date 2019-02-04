@@ -249,5 +249,3 @@ C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\Mi
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.csprojResolveAssemblyReference.cache
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.dll
 C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\obj\Debug\Data Inspector.pdb
-C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\LoadingBar.exe
-C:\Users\rpudlowski\Source\Repos\green-nutz\Data Inspector\Data Inspector\bin\LoadingBar.pdb

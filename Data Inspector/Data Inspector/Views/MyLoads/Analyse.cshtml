@@ -6,14 +6,34 @@
     ViewBag.Title = "Analyse";
 
 }
-
 @section scripts{
-    <script src="~/Scripts/tableloadchart.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.9/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-datatables/0.6.2/angular-datatables.min.js"></script>
+<script type="text/javascript" src='https://www.google.com/jsapi?autoload={"modules":[{"name":"visualization","version":"1","packages":["corechart","controls","table"]}]}'></script>
+<script src="~/Scripts/tableloadchart.js"></script>
+<script>
+        var tableid = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
+        ChartsPage.value("tableid", tableid);
+</script>
+
 }
+
 
 <h2>Analyse</h2>
 
-<div id="chart_div"></div>
+<div ng-app="ChartsPage" ng-controller="PageChartController">
+
+    <div style="position:absolute; z-index:1; margin-top:50px;"><h3>Field Population Percentage</h3></div>
+        <div class="container-fluid" id="chartdiv" style="width: 100%; height: 700px; display:inline-block ">
+            
+        </div>
+        <div class="container-fluid" id="container" style="width: 100%; padding: 10px; display:inline-block">
+            
+        </div>
+    <div class="container-fluid" id="containerPieChart" style="width: 100%; padding: 10px; display:inline-block">
+    </div>
+</div>
 
 
     
