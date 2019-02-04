@@ -118,8 +118,28 @@ namespace Data_Inspector.Controllers
             LoadViewModel load = new LoadViewModel();
 
             //get list of unprocessed ids
+            var ids = load.unprocessedids();
 
             //for each id run Load/Process/id
+            foreach (var id in ids)
+            {
+                var fileName = load.filename(id);
+                var path = Path.Combine(Server.MapPath("~/Content/Upload"), fileName);
+
+                load.loadFile(path, fileName, id.ToString());
+
+                //delete the copied file
+                if (System.IO.File.Exists(path))
+                {
+                    System.IO.File.Delete(path);
+                }
+
+                //run analysis
+                // load.runanalysis(id);
+
+                // once complete, update progress to 100%
+                load.progressupdate(id);
+            }
 
             return View();
         }
