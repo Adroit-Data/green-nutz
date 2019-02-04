@@ -530,6 +530,29 @@ namespace Data_Inspector.Models
             }
 
         }
+
+
+        public List<Guid> unprocessedids()
+        {
+
+            List<Guid> list = new List<Guid>();
+
+            using (var context = new LoadedFiles())
+            {
+                var unprocessedfiles = context.DBLoadedFiles.Where(b => b.Progress == null);
+
+                foreach (var row in unprocessedfiles)
+                {
+                    list.Add(row.LoadedFileID);
+                }
+
+            }
+
+            return list;
+
+        }
+
+
     }
 }
 
